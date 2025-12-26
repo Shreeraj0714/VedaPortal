@@ -5,7 +5,8 @@ Django settings for core project.
 from pathlib import Path
 import os
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
 
 # =========================
 # SECURITY
@@ -53,14 +54,20 @@ MIDDLEWARE = [
 
 
 # =========================
-# URL & TEMPLATE CONFIG
+# ✅ URL CONFIG (MISSING FIX)
 # =========================
 ROOT_URLCONF = 'core.urls'
 
+
+# =========================
+# TEMPLATES
+# =========================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',   # ✅ correct
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -112,16 +119,14 @@ USE_TZ = True
 
 
 # =========================
-# ✅ STATIC FILES (FIXED)
+# STATIC FILES
 # =========================
 STATIC_URL = '/static/'
 
-# ❗ DO NOT remove this
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# ❗ REQUIRED for admin
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 

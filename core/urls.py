@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-# Import ALL functions from your views.py, including the NEW ones
+# Import ALL functions from your views.py
 from main.views import (
     landing, college_our, college_wip,
     home, register, login_user, logout_user,
@@ -12,7 +12,7 @@ from main.views import (
     subject_view, topic_view,
     question_bank_view, revision_view, mock_paper_view,
     pyq_view,
-    log_content_violation   # ✅ NEW IMPORT (STEP 3)
+    log_content_violation
 )
 
 urlpatterns = [
@@ -47,13 +47,13 @@ urlpatterns = [
     path('premium/', premium_content, name='premium'),
 
     # -------------------------
-    # NEW: Dynamic Content & Reader Mode
+    # Dynamic Content
     # -------------------------
     path('subject/<str:subject_name>/', subject_view, name='subject_detail'),
     path('topic/<int:topic_id>/', topic_view, name='topic_reader'),
 
     # -------------------------
-    # NEW: Exam Content
+    # Exam Content
     # -------------------------
     path('subject/<str:subject_name>/question-bank/', question_bank_view, name='question_bank'),
     path('subject/<str:subject_name>/revision/', revision_view, name='revision_view'),
@@ -61,7 +61,7 @@ urlpatterns = [
     path('subject/<str:subject_name>/pyq/', pyq_view, name='pyq_view'),
 
     # -------------------------
-    # 🔐 CONTENT VIOLATION LOGGER (STEP 3)
+    # Content Violation Logger
     # -------------------------
     path(
         'log-content-violation/',
@@ -75,10 +75,10 @@ urlpatterns = [
     path('fy/<str:semester>/', semester_subjects, name='fy_semester'),
     path('fy/<str:semester>/<str:branch>/<str:subject>/syllabus/', subject_syllabus, name='subject_syllabus'),
     path('fy/<str:semester>/<str:branch>/<str:subject>/', subject_units, name='subject_units'),
-
 ]
 
-# Media Files Configuration
+# -------------------------
+# Static & Media (DEV ONLY)
+# -------------------------
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
