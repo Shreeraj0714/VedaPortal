@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login Securely | VedaPortal{% endblock %}
+
+{% block content %}
+
+<style>
+    nav, .navbar, header, .header { display: none !important; }
+    body { background: var(--bg-body); overflow-x: hidden; }
+
+    .auth-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at top right, #f1f5f9, #e2e8f0);
+        z-index: 99;
+        display: flex; align-items: center; justify-content: center;
+        overflow-y: auto; padding: 20px;
+    }
+
+    .auth-card {
+        background: #ffffff;
+        width: 100%; max-width: 400px; padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        text-align: center; border: 1px solid #fff; position: relative;
+        margin: auto;
+    }
+
+    .form-logo { width: 80px; margin-bottom: 20px; border-radius: 8px; }
+    h2 { color: var(--primary-slate); margin-bottom: 5px; font-weight: 700; }
+    .subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 30px; }
+
+    .form-group { margin-bottom: 20px; text-align: left; position: relative; }
+    .form-label { display: block; margin-bottom: 8px; color: var(--text-main); font-weight: 600; font-size: 0.9rem; }
+
+    .form-control {
+        width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1;
+        border-radius: 8px; font-size: 1rem; box-sizing: border-box;
+    }
+
+    .toggle-password {
+        position: absolute; right: 15px; top: 42px;
+        cursor: pointer; color: #64748b;
+        font-size: 0.75rem; font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .btn-primary-square {
+        width: 100%; background-color: var(--primary-dark);
+        color: white; padding: 14px;
+        border: none; border-radius: 8px;
+        font-weight: 700; font-size: 1rem;
+        cursor: pointer; text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .forgot-link {
+        display: block; text-align: right; font-size: 0.85rem;
+        color: var(--accent-blue); margin-top: -15px;
+        margin-bottom: 20px; cursor: pointer;
+    }
+
+    .form-footer { margin-top: 25px; font-size: 0.9rem; color: #64748b; }
+    .form-footer a { color: var(--accent-blue); font-weight: 600; }
+
+    .help-btn-float {
+        position: absolute; top: 20px; right: 20px;
+        background: #f1f5f9; color: #64748b;
+        padding: 8px 15px; border-radius: 20px;
+        font-size: 0.85rem; cursor: pointer;
+    }
+
+    .modal-overlay {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        display: none; align-items: center; justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-box {
+        background: white; padding: 30px;
+        border-radius: 16px;
+        width: 100%; max-width: 350px;
+        text-align: center;
+    }
+</style>
+
+<div class="auth-overlay">
+    <div class="help-btn-float" onclick="openHelp()">❓ Need Help?</div>
+
+    <div class="auth-card">
+        <img src="{% static 'images/college_logos/DYPCET.jpeg' %}" class="form-logo">
+
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Log in to access your notes</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label">Unique ID</label>
+                <input type="text" name="unique_id" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="loginPassword" name="password" class="form-control" required>
+                <span class="toggle-password" onclick="togglePassword('loginPassword', this)">Show</span>
+            </div>
+
+            <div class="forgot-link" onclick="openHelp('reset')">Forgot Password?</div>
+
+            <button type="submit" class="btn-primary-square">Secure Login</button>
+        </form>
+
+        <div class="form-footer">
+            New Student? <a href="{% url 'register' %}">Create an Account</a>
+        </div>
+    </div>
+</div>
+
+<div id="helpModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 id="modalTitle">Student Support</h3>
+
+        <p id="modalDesc">
+            Contact admin for assistance.
+        </p>
+
+        <div id="contactDetails" style="display:none; text-align:left; font-size:0.9rem;">
+            <p><strong>📞 WhatsApp:</strong> <a href="https://wa.me/919890591422" target="_blank">9890591422</a></p>
+            <p><strong>📧 Email:</strong> <a href="mailto:vedaaportal@gmail.com">vedaaportal@gmail.com</a></p>
+        </div>
+
+        <button onclick="closeHelp()" class="btn-primary-square" style="margin-top:15px;">Close</button>
+    </div>
+</div>
+
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === "password") {
+        input.type = "text";
+        btn.innerText = "Hide";
+    } else {
+        input.type = "password";
+        btn.innerText = "Show";
+    }
+}
+
+function openHelp(type) {
+    const modal = document.getElementById('helpModal');
+    const title = document.getElementById('modalTitle');
+    const desc = document.getElementById('modalDesc');
+    const contact = document.getElementById('contactDetails');
+
+    contact.style.display = 'block';
+
+    if (type === 'reset') {
+        title.innerText = "Reset Password";
+        desc.innerText = "To reset your password, please contact admin using the details below.";
+    } else {
+        title.innerText = "Student Support";
+        desc.innerText = "Need help with login or access? Contact us below.";
+    }
+
+    modal.style.display = 'flex';
+}
+
+function closeHelp() {
+    document.getElementById('helpModal').style.display = 'none';
+}
+</script>
+
+{% endblock %}

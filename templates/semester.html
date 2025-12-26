@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ semester }} Subjects | VedaPortal{% endblock %}
+
+{% block content %}
+
+<style>
+    /* 1. LAYOUT & SIDEBAR (Desktop Default) */
+    nav, .navbar, header, .header { display: none !important; }
+    body { background-color: var(--bg-body); overflow-x: hidden; }
+    .layout-container { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 260px;
+        background: var(--primary-slate);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 25px;
+        position: fixed;
+        height: 100%;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+    }
+    .brand-logo {
+        font-size: 1.5rem; font-weight: 800; margin-bottom: 40px;
+        color: #fff; padding-left: 15px; border-left: 5px solid var(--accent-blue);
+    }
+    .nav-item {
+        display: flex; align-items: center; padding: 12px 15px;
+        color: #cbd5e1; text-decoration: none; border-radius: var(--radius-md);
+        margin-bottom: 5px; transition: all 0.2s; cursor: pointer;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.1); color: white; transform: translateX(5px); }
+    .nav-icon { margin-right: 12px; }
+
+    /* MAIN AREA */
+    .main-area { margin-left: 260px; padding: 40px 50px; width: 100%; }
+
+    .page-header { margin-bottom: 30px; }
+    .breadcrumb { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px; }
+    .breadcrumb a { color: var(--accent-blue); font-weight: 600; }
+    .page-title { font-size: 2rem; font-weight: 800; color: var(--text-main); }
+
+    /* === BRANCH TABS === */
+    .branch-tabs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 15px;
+    }
+
+    .tab-btn {
+        background: white;
+        border: 1px solid #e2e8f0;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-muted);
+        transition: all 0.3s;
+        box-shadow: var(--shadow-sm);
+        white-space: nowrap; /* Prevent text wrap */
+    }
+
+    .tab-btn:hover { background: #f1f5f9; color: var(--accent-blue); }
+    
+    .tab-btn.active {
+        background: var(--accent-blue);
+        color: white;
+        border-color: var(--accent-blue);
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+    }
+
+    /* SUBJECT GRID */
+    .subject-grid {
+        display: none; /* Hidden by default */
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        animation: fadeIn 0.4s ease;
+    }
+    
+    .subject-grid.active-grid { display: grid; }
+
+    /* CARD DESIGN */
+    .subject-card {
+        background: var(--bg-card);
+        border: 1px solid #e2e8f0;
+        border-radius: var(--radius-lg);
+        padding: 25px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex; flex-direction: column; justify-content: space-between;
+        height: 100%; box-shadow: var(--shadow-sm);
+    }
+    .subject-card:hover {
+        transform: translateY(-5px); box-shadow: var(--shadow-float); border-color: var(--accent-blue);
+    }
+    .sub-icon {
+        width: 50px; height: 50px; background: #eff6ff; color: var(--accent-blue);
+        border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; margin-bottom: 20px;
+    }
+    .sub-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .btn-start {
+        display: block; width: 100%; text-align: center; padding: 12px; border-radius: var(--radius-md);
+        background: #f1f5f9; color: var(--text-main); font-weight: 600; transition: all 0.2s;
+    }
+    .btn-start:hover { background: var(--accent-blue); color: white; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* =========================================
+       📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        /* Hide Sidebar */
+        .sidebar { display: none; }
+        
+        /* Full Width Main Area */
+        .main-area {
+            margin-left: 0;
+            padding: 20px;
+            width: 100%;
+        }
+
+        /* Smaller Title */
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        /* Branch Tabs Scrollable */
+        .branch-tabs {
+            flex-wrap: nowrap; /* Keep on one line */
+            overflow-x: auto; /* Allow side scrolling */
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
+
+        /* Single Column Grid */
+        .subject-grid {
+            grid-template-columns: 1fr; /* Force 1 column */
+            gap: 20px;
+        }
+
+        /* Mobile Back Link */
+        .mobile-back-link {
+            display: block !important;
+        }
+    }
+
+    /* Hide mobile back link on desktop */
+    .mobile-back-link {
+        display: none;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #64748b;
+        text-decoration: none;
+    }
+
+</style>
+
+<div class="layout-container">
+
+    <div class="sidebar">
+        <div class="brand-logo">VedaPortal</div>
+        <a href="{% url 'home' %}" class="nav-item">
+            <span class="nav-icon">⬅️</span> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="main-area">
+        
+        <a href="javascript:history.back()" class="mobile-back-link">← Back</a>
+        
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="{% url 'home' %}">Dashboard</a> / Select Branch
+            </div>
+            <h1 class="page-title">
+                {{ semester }}
+            </h1>
+        </div>
+
+        {% if "Physics" in semester %}
+            
+            <div class="branch-tabs">
+                <button class="tab-btn active" onclick="showBranch('ds')">Data Science</button>
+                <button class="tab-btn" onclick="showBranch('cse')">CSE</button>
+                <button class="tab-btn" onclick="showBranch('aiml')">AIML</button>
+            </div>
+
+            <div id="grid-ds" class="subject-grid active-grid">
+                <div class="subject-card">
+                    <div><div class="sub-icon">📊</div><div class="sub-title">Mathematics-I for Data Science</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='ds' subject='maths-1-ds' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">⚛️</div><div class="sub-title">Applied Physics</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='ds' subject='applied-physics' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">💻</div><div class="sub-title">Computer Programming</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='ds' subject='comp-prog' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">📟</div><div class="sub-title">Digital Electronics & Microprocessor</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='ds' subject='digital-electronics' %}" class="btn-start">Start Learning →</a>
+                </div>
+            </div>
+
+            <div id="grid-cse" class="subject-grid">
+                <div class="subject-card">
+                    <div><div class="sub-icon">📐</div><div class="sub-title">Mathematics-I for CSE</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='cse' subject='maths-1-cse' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">⚛️</div><div class="sub-title">Applied Physics</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='cse' subject='applied-physics' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧩</div><div class="sub-title">Computer Programming</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='cse' subject='comp-prog' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🖥️</div><div class="sub-title">Operating System</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='cse' subject='os' %}" class="btn-start">Start Learning →</a>
+                </div>
+            </div>
+
+            <div id="grid-aiml" class="subject-grid">
+                <div class="subject-card">
+                    <div><div class="sub-icon">🤖</div><div class="sub-title">Mathematics-I for AIML</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='aiml' subject='maths-1-aiml' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">⚛️</div><div class="sub-title">Applied Physics</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='aiml' subject='applied-physics' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">💻</div><div class="sub-title">Computer Programming</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='aiml' subject='comp-prog' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">📟</div><div class="sub-title">Digital Electronics & Microprocessor</div></div>
+                    <a href="{% url 'subject_units' semester='physics-cycle' branch='aiml' subject='digital-electronics' %}" class="btn-start">Start Learning →</a>
+                </div>
+            </div>
+
+        {% endif %}
+
+
+        {% if "Chemistry" in semester %}
+            
+            <div class="branch-tabs">
+                <button class="tab-btn active" onclick="showBranch('civil')">Civil</button>
+                <button class="tab-btn" onclick="showBranch('mech')">Mechanical</button>
+                <button class="tab-btn" onclick="showBranch('chem')">Chemical</button>
+                <button class="tab-btn" onclick="showBranch('entc')">ENTC</button>
+            </div>
+
+            <div id="grid-civil" class="subject-grid active-grid">
+                <div class="subject-card">
+                    <div><div class="sub-icon">🏗️</div><div class="sub-title">Applied Mathematics-I</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='civil' subject='app-maths-1' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧪</div><div class="sub-title">Applied Chemistry (Civil)</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='civil' subject='app-chem-civil' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧠</div><div class="sub-title">Generative AI</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='civil' subject='gen-ai' %}" class="btn-start">Start Learning →</a>
+                </div>
+            </div>
+
+            <div id="grid-mech" class="subject-grid">
+                <div class="subject-card">
+                    <div><div class="sub-icon">⚙️</div><div class="sub-title">Linear Algebra & Calculus</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='mech' subject='linear-algebra' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧪</div><div class="sub-title">Applied Chemistry (Mech)</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='mech' subject='app-chem-mech' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧠</div><div class="sub-title">Generative AI</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='mech' subject='gen-ai' %}" class="btn-start">Start Learning →</a>
+                </div>
+            </div>
+
+            <div id="grid-chem" class="subject-grid">
+                <div class="subject-card">
+                    <div><div class="sub-icon">⚗️</div><div class="sub-title">Linear Algebra & Calculus</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='chem' subject='linear-algebra' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧪</div><div class="sub-title">Applied Chemistry (Chem)</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='chem' subject='app-chem-chem' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧠</div><div class="sub-title">Generative AI</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='chem' subject='gen-ai' %}" class="btn-start">Start Learning →</a>
+                </div>
+            </div>
+
+             <div id="grid-entc" class="subject-grid">
+                <div class="subject-card">
+                    <div><div class="sub-icon">📡</div><div class="sub-title">Linear Algebra & Calculus</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='entc' subject='linear-algebra' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧪</div><div class="sub-title">Applied Chemistry</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='entc' subject='app-chem' %}" class="btn-start">Start Learning →</a>
+                </div>
+                <div class="subject-card">
+                    <div><div class="sub-icon">🧠</div><div class="sub-title">Generative AI</div></div>
+                    <a href="{% url 'subject_units' semester='chemistry-cycle' branch='entc' subject='gen-ai' %}" class="btn-start">Start Learning →</a>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    function showBranch(branchId) {
+        // 1. Hide all grids
+        const grids = document.querySelectorAll('.subject-grid');
+        grids.forEach(grid => grid.classList.remove('active-grid'));
+
+        // 2. Deactivate all buttons
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(btn => btn.classList.remove('active'));
+
+        // 3. Show selected grid
+        const activeGrid = document.getElementById('grid-' + branchId);
+        if(activeGrid) {
+            activeGrid.classList.add('active-grid');
+        }
+
+        // 4. Highlight clicked button (Event target is easiest)
+        const clickedBtn = event.target;
+        clickedBtn.classList.add('active');
+    }
+</script>
+
+{% endblock %}

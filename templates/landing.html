@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Select Institution | VedaPortal{% endblock %}
+
+{% block content %}
+
+<style>
+    /* 1. HIDE NAVBAR (Focus Mode) */
+    nav, .navbar, header, .header { display: none !important; }
+    
+    body { background-color: var(--bg-body); }
+
+    .college-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    /* === NEW HERO SECTION === */
+    .hero-section {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 40px 20px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary-slate);
+        margin-bottom: 15px;
+        letter-spacing: -1px;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 700px;
+        margin: 0 auto 30px auto;
+        line-height: 1.6;
+    }
+
+    .cgpa-box {
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
+        padding: 20px;
+        display: inline-block;
+        max-width: 800px;
+        text-align: left;
+    }
+
+    .cgpa-title {
+        color: var(--accent-blue);
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 8px;
+        display: flex; align-items: center; gap: 8px;
+    }
+
+    .cgpa-text {
+        font-size: 0.95rem;
+        color: #334155;
+        line-height: 1.5;
+    }
+
+    /* SECTION LABELS */
+    .section-label {
+        color: var(--text-muted);
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .college-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+    }
+
+    /* CARD STYLING */
+    .college-card {
+        background: var(--bg-card);
+        border: 1px solid #e2e8f0;
+        border-radius: var(--radius-md);
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        color: var(--text-main);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        height: 220px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .college-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-card);
+        border-color: var(--accent-blue);
+    }
+
+    .college-logo { max-width: 120px; max-height: 80px; object-fit: contain; margin-bottom: 15px; margin-top: 10px; }
+    .college-name { font-weight: 600; font-size: 0.95rem; line-height: 1.4; }
+
+    /* BADGES */
+    .wip-card { opacity: 0.7; filter: grayscale(100%); cursor: not-allowed; background-color: #f8fafc; }
+    .active-badge { font-size: 0.7rem; background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 4px; margin-bottom: 5px; border: 1px solid #d1fae5; font-weight: 600; }
+    .wip-badge { font-size: 0.7rem; background: #e2e8f0; padding: 2px 8px; border-radius: 4px; margin-bottom: 5px; color: #64748b; font-weight: 600; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* =========================================
+       📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        .college-container {
+            padding: 20px 15px; /* Use full width */
+        }
+
+        .hero-title {
+            font-size: 1.8rem; /* Smaller heading */
+        }
+
+        .hero-section {
+            padding: 25px 15px;
+            margin-bottom: 30px;
+        }
+
+        .college-grid {
+            grid-template-columns: 1fr; /* Force 1 column on phones */
+            gap: 15px;
+        }
+
+        .college-card {
+            flex-direction: row; /* Horizontal layout on mobile looks better */
+            height: auto;
+            text-align: left;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 15px;
+        }
+
+        .college-logo {
+            max-width: 60px;
+            max-height: 60px;
+            margin: 0 15px 0 0; /* Space between logo and text */
+        }
+
+        .college-name {
+            font-size: 1rem;
+        }
+        
+        .active-badge, .wip-badge {
+            align-self: flex-start; /* Align badge */
+        }
+        
+        /* Arrange badge and name */
+        .college-card div {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="college-container">
+    
+    <div class="hero-section">
+        <h1 class="hero-title">Master Your Engineering Exams</h1>
+        <p class="hero-subtitle">
+            VedaPortal bridges the gap between hard work and smart scores. 
+            Access simplified notes and predicted questions to study efficienty.
+        </p>
+        
+        <div class="cgpa-box">
+            <div class="cgpa-title">
+                <span>🚀 Why Aim for a 9+ CGPA?</span>
+            </div>
+            <p class="cgpa-text">
+                <strong>Placement Filter:</strong> Top companies like TCS Digital, Google, and Amazon filter resumes based on CGPA. A 9.0+ score puts you in the top 5% of applicants instantly.<br><br>
+                <strong>The Veda Strategy:</strong> You don't need to read 500 pages. Our <strong>IMP Question Bank</strong> covers 90% of the recurring exam patterns, allowing you to score maximum marks with focused revision.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="section-label">🚀 Select Your Institution</div>
+    
+    <div class="college-grid">
+        <a href="{% url 'college_our' %}" class="college-card">
+            <img src="{% static 'images/college_logos/DYPCET.jpeg' %}" alt="DYPCET Logo" class="college-logo">
+            <div>
+                <span class="active-badge">Live Access</span>
+                <div class="college-name">D.Y. Patil College of Eng & Tech (Kolhapur)</div>
+            </div>
+        </a>
+
+        <a href="{% url 'college_wip' %}" class="college-card">
+            <img src="{% static 'images/college_logos/DYPSEM.jpeg' %}" alt="DYPSEM Logo" class="college-logo">
+            <div>
+                <span class="active-badge">Live Access</span>
+                <div class="college-name">D.Y. Patil School of Eng & Management</div>
+            </div>
+        </a>
+    </div>
+
+
+    <div class="section-label">🚧 Work in Progress</div>
+    
+    <div class="college-grid">
+        <div class="college-card wip-card">
+            <img src="{% static 'images/college_logos/KIT.jpeg' %}" alt="KIT Logo" class="college-logo">
+            <div>
+                <span class="wip-badge">Coming Soon</span>
+                <div class="college-name">KIT College of Engineering</div>
+            </div>
+        </div>
+
+        <div class="college-card wip-card">
+            <img src="{% static 'images/college_logos/RIT.jpeg' %}" alt="RIT Logo" class="college-logo">
+            <div>
+                <span class="wip-badge">Coming Soon</span>
+                <div class="college-name">Rajarambapu Institute of Technology</div>
+            </div>
+        </div>
+
+        <div class="college-card wip-card">
+            <img src="{% static 'images/college_logos/DANGE.jpeg' %}" alt="Dange Logo" class="college-logo">
+            <div>
+                <span class="wip-badge">Coming Soon</span>
+                <div class="college-name">Annasaheb Dange College</div>
+            </div>
+        </div>
+        
+        <div class="college-card wip-card">
+            <img src="{% static 'images/college_logos/TKIET.jpeg' %}" alt="TKIET Logo" class="college-logo">
+            <div>
+                <span class="wip-badge">Coming Soon</span>
+                <div class="college-name">TKIET Warananagar</div>
+            </div>
+        </div>
+
+        <div class="college-card wip-card">
+            <img src="{% static 'images/college_logos/DKTE.jpeg' %}" alt="DKTE Logo" class="college-logo">
+            <div>
+                <span class="wip-badge">Coming Soon</span>
+                <div class="college-name">DKTE Ichalkaranji</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

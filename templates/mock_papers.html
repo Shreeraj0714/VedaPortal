@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mock Papers | {{ subject.name }}{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+    body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+    .page-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+
+    .header-section { margin-bottom: 40px; text-align: center; }
+    .header-badge {
+        background: #fef3c7; color: #b45309;
+        padding: 6px 16px; border-radius: 20px;
+        font-size: 0.85rem; font-weight: 700;
+        display: inline-block; margin-bottom: 10px;
+    }
+    .page-title { font-size: 2.5rem; font-weight: 800; color: #1e293b; }
+    .page-subtitle { color: #64748b; font-size: 1.1rem; }
+
+    .paper-card {
+        background: white; border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 40px; overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+    .paper-header {
+        background: linear-gradient(to right, #fffbeb, #fff);
+        padding: 20px 30px; display: flex; align-items: center;
+        border-bottom: 1px solid #fcd34d;
+    }
+    .paper-icon {
+        width: 40px; height: 40px;
+        background: #f59e0b; color: white;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        margin-right: 15px;
+    }
+    .paper-title { font-size: 1.25rem; font-weight: 700; }
+    .content-box { padding: 30px; }
+    .question-paper-body { line-height: 1.8; }
+
+    /* 🔒 Disable text selection */
+    #secure-container,
+    #secure-container * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .blur-content {
+        filter: blur(15px);
+        pointer-events: none;
+    }
+</style>
+
+<div class="page-container" id="secure-container">
+    <a href="javascript:history.back()">← Back</a>
+
+    <div class="header-section">
+        <span class="header-badge">Mock Series</span>
+        <h1 class="page-title">{{ subject.name }} Mock Papers</h1>
+        <div class="page-subtitle">Expected Exam Pattern • Full Syllabus</div>
+    </div>
+
+    {% for paper in papers %}
+    <div class="paper-card">
+        <div class="paper-header">
+            <div class="paper-icon"><i class="ri-file-list-3-fill"></i></div>
+            <div class="paper-title">{{ paper.title }}</div>
+        </div>
+        <div class="content-box">
+            <div class="question-paper-body">{{ paper.paper_content|safe }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+(function () {
+
+    const MAX_STRIKES = 10;
+    let violations = parseInt(localStorage.getItem("veda_violations") || "0");
+    const container = document.getElementById("secure-container");
+
+    function logViolationToServer() {
+        fetch("{% url 'log_content_violation' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        });
+    }
+
+    /* ✅ SHORT, CLEAR, NO-SCROLL WARNING */
+    function showWarning() {
+        alert(
+`⚠️ CONTENT SECURITY RULES ⚠️
+
+❌ NO screenshots or recording
+❌ NO tab or page switching
+❌ NO copying content
+
+PAGE CHANGE:
+➡️ Go BACK to DASHBOARD,
+then switch page.
+
+VIOLATIONS: ${violations} / ${MAX_STRIKES}
+
+🚫 AFTER 10 VIOLATIONS:
+ACCESS BLOCKED FOR 2 HOURS.
+
+By clicking OK, you accept these rules.`
+        );
+    }
+
+    function showBlockedMessage() {
+        alert(
+`🚫 ACCESS BLOCKED 🚫
+
+10 violations reached.
+
+Access BLOCKED
+for 2 HOURS.
+
+Contact admin if needed.`
+        );
+    }
+
+    function handleStrike() {
+
+        logViolationToServer();
+        violations++;
+
+        if (violations >= MAX_STRIKES) {
+            showBlockedMessage();
+            localStorage.removeItem("veda_violations");
+            violations = 0;
+            window.location.href = "{% url 'home' %}";
+            return;
+        }
+
+        localStorage.setItem("veda_violations", violations);
+        container.style.visibility = "hidden";
+
+        setTimeout(() => {
+            showWarning();
+            container.style.visibility = "visible";
+        }, 100);
+    }
+
+    document.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("copy", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("cut", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("keydown", e => {
+        if (
+            e.keyCode === 123 ||
+            (e.ctrlKey && ["c","u","p","a","s"].includes(e.key.toLowerCase()))
+        ) {
+            e.preventDefault();
+            handleStrike();
+        }
+    });
+
+    window.addEventListener("blur", () => {
+        container.classList.add("blur-content");
+        handleStrike();
+    });
+
+    window.addEventListener("focus", () => {
+        container.classList.remove("blur-content");
+    });
+
+})();
+</script>
+
+{% endblock %}
+

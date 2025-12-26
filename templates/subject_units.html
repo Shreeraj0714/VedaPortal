@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Resources | {{ subject|title }}{% endblock %}
+
+{% block content %}
+
+<style>
+    /* 1. GRID LAYOUT (Desktop Default) */
+    .resource-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        padding: 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* 2. CARD BASE STYLE */
+    .card-box {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 25px;
+        position: relative;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    }
+
+    /* 3. BORDER COLORS */
+    .border-green { border-top: 5px solid #10b981; }
+    .border-orange { border-top: 5px solid #f97316; }
+    .border-yellow { border-top: 5px solid #eab308; }
+    
+    /* PURPLE CARD (SPECIAL) */
+    .border-purple { 
+        border-top: 5px solid #9333ea; 
+        border: 2px solid #9333ea; 
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.15); 
+        background: #faf5ff; 
+    }
+
+    /* 4. TEXT COLORS */
+    .text-green { color: #10b981; }
+    .text-orange { color: #c2410c; }
+    .text-yellow { color: #a16207; }
+    .text-purple { color: #7e22ce; }
+
+    /* 5. PRICE BADGES */
+    .badge-pill {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        border: 1px solid;
+    }
+
+    .badge-purple {
+        background-color: #9333ea;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 5px rgba(147, 51, 234, 0.4);
+    }
+
+    /* 6. TYPOGRAPHY */
+    .card-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 20px;
+        line-height: 1.3;
+    }
+
+    /* 7. LIST STYLES */
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 25px 0;
+    }
+
+    .feature-list li {
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #475569;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .icon { margin-right: 10px; font-weight: bold; }
+
+    /* 8. BUTTONS */
+    .btn-action {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        display: block;
+        transition: 0.2s;
+        margin-top: auto; 
+    }
+
+    /* Button Variants */
+    .btn-green-outline { background: #ecfdf5; color: #059669; border: 1px solid #10b981; }
+    .btn-green-outline:hover { background: #d1fae5; }
+
+    .btn-solid-green { background: #10b981; color: white; }
+    .btn-solid-green:hover { background: #059669; }
+
+    .btn-solid-orange { background: #f97316; color: white; }
+    .btn-solid-orange:hover { background: #ea580c; }
+
+    .btn-solid-yellow { background: #eab308; color: white; }
+    .btn-solid-yellow:hover { background: #ca8a04; }
+
+    .btn-solid-purple { background: #9333ea; color: white; font-size: 16px; }
+    .btn-solid-purple:hover { background: #7e22ce; }
+
+    /* =========================================
+       📱 MOBILE OPTIMIZATION (This fixes the look on phones)
+       ========================================= */
+    @media (max-width: 768px) {
+        .resource-grid {
+            /* Force 1 column on phones so blocks don't get squashed */
+            grid-template-columns: 1fr; 
+            
+            /* Reduce padding so it fits the screen width nicely */
+            padding: 15px; 
+            gap: 15px;
+        }
+
+        .card-box {
+            /* Slightly tighter padding inside cards for mobile */
+            padding: 20px; 
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem; /* Smaller Title */
+        }
+    }
+
+</style>
+
+<div style="padding: 20px 40px 0; max-width: 1400px; margin: 0 auto;" class="page-header">
+    <a href="javascript:history.back()" style="color:#64748b; text-decoration:none; font-weight:600;">← Back</a>
+    <h1 style="margin-top:10px; font-size:2rem; color:#1e293b;">Resources for {{ subject|title }}</h1>
+</div>
+
+<div class="resource-grid">
+
+    <div class="card-box border-green">
+        <div>
+            <div class="card-label text-green">STANDARD ACCESS</div>
+            <h2 class="card-title">Unit Wise Notes</h2>
+            <ul class="feature-list">
+                <li><span class="icon text-green">✓</span> All 6 Units Covered</li>
+                <li><span class="icon text-green">✓</span> Simplified Definitions</li>
+                <li><span class="icon text-green">✓</span> Diagrammatic Explanations</li>
+            </ul>
+        </div>
+        <a href="{% url 'subject_syllabus' semester branch subject %}" class="btn-action btn-green-outline">Access Now (Free)</a>
+    </div>
+
+    <div class="card-box border-orange">
+        <div class="badge-pill text-orange" style="border-color: #f97316;">₹49</div>
+        <div>
+            <div class="card-label text-orange">EXAM ESSENTIAL</div>
+            <h2 class="card-title">Solved Exam Ready Question Bank</h2>
+            <ul class="feature-list">
+                <li><span class="icon text-orange">★</span> 90% Probability Questions</li>
+                <li><span class="icon text-orange">★</span> Sorted by Difficulty</li>
+                <li><span class="icon text-orange">★</span> Model Answers Included</li>
+                <li><span class="icon text-orange">★</span> Teacher Verified</li>
+            </ul>
+        </div>
+        
+        {% if has_qb %}
+            <a href="{% url 'question_bank' subject %}" class="btn-action btn-green-outline">✅ View Question Bank</a>
+        {% else %}
+            <button onclick="startPayment(49, '{{ subject }} Question Bank')" class="btn-action btn-solid-orange">Unlock Access</button>
+        {% endif %}
+    </div>
+
+    <div class="card-box border-yellow">
+        <div class="badge-pill text-yellow" style="border-color: #eab308;">₹99</div>
+        <div>
+            <div class="card-label text-yellow">MOCK SERIES</div>
+            <h2 class="card-title">Solved Exam Ready Expected Question Paper</h2>
+            <ul class="feature-list">
+                <li><span class="icon text-yellow">★</span> Full Syllabus Mock</li>
+                <li><span class="icon text-yellow">★</span> Exact Exam Pattern</li>
+                <li><span class="icon text-yellow">★</span> Detailed Solution Key</li>
+            </ul>
+        </div>
+
+        {% if has_paper %}
+            <a href="{% url 'mock_paper_view' subject %}" class="btn-action btn-green-outline">✅ View Solved Paper</a>
+        {% else %}
+            <button onclick="startPayment(99, '{{ subject }} Expected Paper')" class="btn-action btn-solid-yellow" style="background-color: #ca8a04;">Unlock Access</button>
+        {% endif %}
+    </div>
+
+    <div class="card-box border-yellow">
+        <div class="badge-pill text-yellow" style="border-color: #eab308;">₹49</div>
+        <div>
+            <div class="card-label text-yellow">EXAM BOOSTER</div>
+            <h2 class="card-title">Last Minute Revision</h2>
+            <ul class="feature-list">
+                <li><span class="icon text-yellow">★</span> 2-Hour Study Plan</li>
+                <li><span class="icon text-yellow">★</span> Formula Cheat Sheet</li>
+                <li><span class="icon text-yellow">★</span> One-Page Summaries</li>
+            </ul>
+        </div>
+
+        {% if has_revision %}
+            <a href="{% url 'revision_view' subject %}" class="btn-action btn-green-outline">✅ View Revision Kit</a>
+        {% else %}
+            <button onclick="startPayment(49, '{{ subject }} Revision')" class="btn-action btn-solid-yellow" style="background-color: #ca8a04;">Unlock Access</button>
+        {% endif %}
+    </div>
+
+    <div class="card-box border-purple">
+        <div class="badge-pill badge-purple">BEST OFFER ₹149</div>
+        
+        <div>
+            <div class="card-label text-purple">ULTIMATE BUNDLE</div>
+            <h2 class="card-title">All-In-One Exam Pass</h2>
+            
+            <ul class="feature-list">
+                <li><span class="icon text-purple">✦</span> Solved Question Bank (Worth ₹49)</li>
+                <li><span class="icon text-purple">✦</span> Solved Expected Paper (Worth ₹99)</li>
+                <li><span class="icon text-purple">✦</span> Last Minute Revision (Worth ₹49)</li>
+                
+                <li style="background: #e9d8fd; padding: 6px; border-radius: 5px; margin-top: 8px;">
+                    <span class="icon text-purple">🔥</span> <strong>Previous Year question paper solved</strong>
+                </li>
+            </ul>
+        </div>
+        
+        {% if has_pyq %}
+            <a href="{% url 'pyq_view' subject %}" class="btn-action btn-green-outline">
+                ✅ View Previous Year Papers
+            </a>
+        {% else %}
+            <button onclick="startPayment(149, '{{ subject }} All-In-One Bundle')" class="btn-action btn-solid-purple">
+                Unlock Everything @ ₹149
+            </button>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+function startPayment(amount, itemName) {
+    window.location.href = "{% url 'payment' %}?amount=" + amount + "&item=" + encodeURIComponent(itemName);
+}
+</script>
+
+{% endblock %}

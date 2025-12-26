@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}{{ branch }} | VedaPortal{% endblock %}
+
+{% block content %}
+
+<style>
+    /* 1. HIDE NAVBAR */
+    nav, .navbar, header, .header { display: none !important; }
+    
+    body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+
+    /* 2. PAGE LAYOUT */
+    .page-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+        color: #1e293b;
+        margin: 0 0 10px 0;
+        font-weight: 800;
+    }
+
+    .subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    /* 3. SY COMING SOON BLOCK */
+    .wip-box {
+        margin-top: 40px;
+        padding: 40px;
+        text-align: center;
+        border: 2px dashed #cbd5e1;
+        background-color: white;
+        border-radius: 16px;
+    }
+
+    .wip-title { color: #1e293b; font-size: 1.5rem; margin-bottom: 10px; }
+    .wip-text { color: #64748b; line-height: 1.6; }
+
+    /* 4. SUBJECT CARDS (Grid Layout) */
+    .subject-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .subject-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #334155;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        min-height: 80px;
+    }
+
+    .subject-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        border-color: #3b82f6;
+        color: #2563eb;
+    }
+
+    /* 5. PREMIUM NOTICE */
+    .premium-notice {
+        margin-top: 40px;
+        padding: 20px;
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 8px;
+        color: #92400e;
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    /* =========================================
+       📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 20px;
+        }
+
+        h1 { font-size: 1.8rem; }
+
+        .subject-grid {
+            grid-template-columns: 1fr; /* 1 Column on Mobile */
+            gap: 15px;
+        }
+
+        .subject-card {
+            padding: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .wip-box {
+            padding: 25px 15px;
+        }
+    }
+</style>
+
+<div class="page-container">
+
+    <a href="javascript:history.back()" class="back-btn">← Back</a>
+
+    <div class="page-header">
+        <h1>{{ branch }}</h1>
+        {% if year != 'SY' %}
+            {% if semester == 'ODD' %}
+                <div class="subtitle">FY – Physics Cycle</div>
+            {% else %}
+                <div class="subtitle">FY – Chemistry Cycle</div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if year == 'SY' %}
+
+        <div class="wip-box">
+            <h2 class="wip-title">🚧 SY Content Coming Soon</h2>
+            <p class="wip-text">
+                We are currently preparing structured notes,
+                question banks, and exam-focused material
+                for Second Year students.
+            </p>
+            <p style="margin-top:15px; font-weight:600; color:#334155;">Please check back later.</p>
+        </div>
+
+    {% else %}
+
+        <div class="subject-grid">
+
+        {% if semester == 'ODD' %}
+
+            {% if branch|lower == 'cse' %}
+                <div class="subject-card">Mathematics-I for CSE</div>
+                <div class="subject-card">Applied Physics</div>
+                <div class="subject-card">Computer Programming</div>
+                <div class="subject-card">Operating System</div>
+
+            {% elif branch|lower == 'ds' %}
+                <div class="subject-card">Mathematics-I for Data Science</div>
+                <div class="subject-card">Applied Physics</div>
+                <div class="subject-card">Computer Programming</div>
+                <div class="subject-card">Digital Electronics</div>
+
+            {% elif branch|lower == 'aiml' %}
+                <div class="subject-card">Mathematics-I for AIML</div>
+                <div class="subject-card">Applied Physics</div>
+                <div class="subject-card">Computer Programming</div>
+                <div class="subject-card">Digital Electronics</div>
+            {% endif %}
+
+        {% else %}
+
+            {% if branch|lower == 'civil' %}
+                <div class="subject-card">Applied Mathematics-I</div>
+                <div class="subject-card">Applied Chemistry (Civil)</div>
+                <div class="subject-card">Generative AI</div>
+
+            {% elif branch|lower == 'mechanical' %}
+                <div class="subject-card">Linear Algebra & Calculus</div>
+                <div class="subject-card">Applied Chemistry (Mech)</div>
+                <div class="subject-card">Generative AI</div>
+
+            {% elif branch|lower == 'chemical' %}
+                <div class="subject-card">Linear Algebra & Calculus</div>
+                <div class="subject-card">Applied Chemistry (Chem)</div>
+                <div class="subject-card">Generative AI</div>
+
+            {% elif branch|lower == 'etc' %}
+                <div class="subject-card">Linear Algebra & Calculus</div>
+                <div class="subject-card">Applied Chemistry</div>
+                <div class="subject-card">Generative AI</div>
+            {% endif %}
+
+        {% endif %}
+
+        </div>
+
+        <div class="premium-notice">
+            <div style="font-size: 1.5rem;">🔒</div>
+            <div>
+                <strong>Premium Notice</strong><br>
+                IMP Questions, Question Banks, Expected Papers
+                and Downloads are available only for PRO users.
+            </div>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

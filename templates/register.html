@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Account | VedaPortal{% endblock %}
+
+{% block content %}
+
+<style>
+    /* 1. HIDE NAVBAR */
+    nav, .navbar, header, .header { display: none !important; }
+    
+    /* 2. PAGE SETUP */
+    body { 
+        background: var(--bg-body);
+        /* Allow scrolling on mobile if content is tall */
+        overflow-x: hidden; 
+    }
+
+    /* 3. OVERLAY WRAPPER (Scrollable container) */
+    .auth-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at top right, #f1f5f9, #e2e8f0);
+        z-index: 9999;
+        
+        /* Flexbox for centering */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        /* Critical for Mobile: Allow scrolling if height is small */
+        overflow-y: auto;
+        padding: 20px; 
+    }
+
+    /* 4. CARD DESIGN */
+    .auth-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 400px;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        text-align: center;
+        border: 1px solid #fff;
+        
+        /* Ensures card doesn't stick to top/bottom when scrolling */
+        margin: auto; 
+    }
+
+    .form-logo { width: 60px; margin-bottom: 15px; border-radius: 8px; }
+
+    h2 { color: var(--primary-slate); margin-bottom: 5px; font-weight: 700; }
+    .subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 25px; }
+
+    /* INPUTS */
+    .form-group { margin-bottom: 15px; text-align: left; position: relative; }
+    
+    .form-label { 
+        display: block; 
+        margin-bottom: 6px; 
+        color: var(--text-main); 
+        font-weight: 600; 
+        font-size: 0.9rem; 
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus { 
+        border-color: var(--accent-blue); 
+        outline: none; 
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); 
+    }
+
+    /* SHOW/HIDE TOGGLE STYLE */
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 35px;
+        cursor: pointer;
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        user-select: none;
+    }
+
+    /* SQUARE BUTTON THEME (MATCHES LOGIN) */
+    .btn-primary-square {
+        width: 100%;
+        background-color: var(--primary-dark);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 10px;
+    }
+    .btn-primary-square:hover {
+        background-color: #1e293b;
+    }
+
+    /* FOOTER */
+    .form-footer { margin-top: 20px; font-size: 0.9rem; color: #64748b; }
+    .form-footer a { color: var(--accent-blue); font-weight: 600; text-decoration: none; }
+
+    .alert-box { 
+        background-color: #fef2f2; 
+        color: #991b1b; 
+        padding: 10px; 
+        border-radius: 8px; 
+        margin-bottom: 20px; 
+        border: 1px solid #fecaca;
+        font-size: 0.85rem;
+    }
+
+    /* =========================================
+        📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        .auth-card {
+            padding: 25px 20px;
+            max-width: 100%;
+        }
+        
+        .form-logo { width: 50px; }
+        
+        h2 { font-size: 1.5rem; }
+        
+        .form-control {
+            font-size: 16px;
+            padding: 12px 15px;
+        }
+
+        .btn-primary-square {
+            padding: 14px;
+        }
+    }
+</style>
+
+<div class="auth-overlay">
+    <div class="auth-card">
+        
+        <img src="{% static 'images/college_logos/DYPCET.jpeg' %}" alt="College Logo" class="form-logo">
+        
+        <h2>Create Account</h2>
+        <p class="subtitle">Join VedaPortal for exclusive notes</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-box">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Unique ID (Roll No)</label>
+                <input type="text" name="unique_id" class="form-control" placeholder="e.g. EN2214589" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="student@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Create Password</label>
+                <input type="password" name="password" id="regPassword" class="form-control" placeholder="••••••••" required>
+                <span class="toggle-password" onclick="togglePassword('regPassword', this)">Show</span>
+            </div>
+
+            <button type="submit" class="btn-primary-square">Create Account</button>
+        </form>
+
+        <div class="form-footer">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function togglePassword(fieldId, btn) {
+        const passwordInput = document.getElementById(fieldId);
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            btn.innerText = "Hide";
+        } else {
+            passwordInput.type = "password";
+            btn.innerText = "Show";
+        }
+    }
+</script>
+
+{% endblock %}

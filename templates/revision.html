@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Last Minute Revision | {{ subject.name }}{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+    /* PAGE SETUP */
+    body { background-color: #fcfcfc; font-family: 'Inter', sans-serif; }
+    
+    .page-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* HEADER */
+    .header-section { margin-bottom: 40px; text-align: center; }
+    .header-badge {
+        background: #fffbeb; color: #b45309;
+        padding: 6px 16px; border-radius: 20px;
+        font-size: 0.85rem; font-weight: 800;
+        display: inline-block; margin-bottom: 10px;
+        border: 2px solid #fcd34d;
+    }
+    .page-title { font-size: 2.5rem; font-weight: 800; color: #1e293b; }
+    .page-subtitle { color: #64748b; font-size: 1.1rem; }
+
+    /* REVISION CARD */
+    .rev-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+
+    .rev-header {
+        padding: 20px 30px;
+        border-bottom: 1px dashed #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fafafa;
+    }
+
+    .rev-title { font-size: 1.2rem; font-weight: 700; }
+
+    .rev-body {
+        padding: 30px;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #1e293b;
+    }
+
+    .back-btn {
+        display: inline-flex; align-items: center;
+        margin-bottom: 20px; color: #64748b;
+        text-decoration: none; font-weight: 500;
+    }
+
+    /* 🔒 SAME SECURITY CSS */
+    #secure-container,
+    #secure-container * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .blur-content {
+        filter: blur(15px);
+        pointer-events: none;
+    }
+</style>
+
+<div class="page-container" id="secure-container">
+
+    <a href="javascript:history.back()" class="back-btn">
+        <i class="ri-arrow-left-line" style="margin-right: 5px;"></i> Back to Resources
+    </a>
+
+    <div class="header-section">
+        <span class="header-badge"><i class="ri-flashlight-fill"></i> Exam Booster</span>
+        <h1 class="page-title">{{ subject.name }} Revision Kit</h1>
+        <div class="page-subtitle">Formulas • Summaries • 2-Hour Plan</div>
+    </div>
+
+    {% for item in materials %}
+    <div class="rev-card">
+        <div class="rev-header">
+            <div class="rev-title">{{ item.title }}</div>
+        </div>
+        <div class="rev-body">
+            {{ item.content|safe }}
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<script>
+(function () {
+
+    const MAX_STRIKES = 10;
+    let violations = parseInt(localStorage.getItem("veda_violations") || "0");
+    const container = document.getElementById("secure-container");
+
+    function showWarning() {
+        alert(
+`⚠️ CONTENT SECURITY RULES ⚠️
+
+❌ NO screenshots or recording
+❌ NO tab or page switching
+❌ NO copying content
+
+PAGE CHANGE:
+➡️ Go BACK to DASHBOARD,
+then switch page.
+
+VIOLATIONS: ${violations} / ${MAX_STRIKES}
+
+🚫 AFTER 10 VIOLATIONS:
+ACCESS BLOCKED FOR 2 HOURS.
+
+By clicking OK, you accept these rules.`
+        );
+    }
+
+    function showBlockedMessage() {
+        alert(
+`🚫 ACCESS BLOCKED 🚫
+
+10 violations reached.
+
+Access BLOCKED
+for 2 HOURS.
+
+Contact admin if needed.`
+        );
+    }
+
+    function handleStrike() {
+        violations++;
+
+        if (violations >= MAX_STRIKES) {
+            showBlockedMessage();
+            localStorage.removeItem("veda_violations");
+            violations = 0;
+            window.location.href = "{% url 'home' %}";
+            return;
+        }
+
+        localStorage.setItem("veda_violations", violations);
+        container.style.visibility = "hidden";
+
+        setTimeout(() => {
+            showWarning();
+            container.style.visibility = "visible";
+        }, 100);
+    }
+
+    document.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("copy", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("cut", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("keydown", e => {
+        if (
+            e.keyCode === 123 ||
+            (e.ctrlKey && ["c","u","p","a","s"].includes(e.key.toLowerCase()))
+        ) {
+            e.preventDefault();
+            handleStrike();
+        }
+    });
+
+    window.addEventListener("blur", () => {
+        container.classList.add("blur-content");
+        handleStrike();
+    });
+
+    window.addEventListener("focus", () => {
+        container.classList.remove("blur-content");
+    });
+
+})();
+</script>
+
+{% endblock %}

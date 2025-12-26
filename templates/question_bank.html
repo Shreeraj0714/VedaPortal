@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Question Bank | {{ subject.name }}{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+    body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+    
+    .page-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .header-section { margin-bottom: 40px; text-align: center; }
+    .header-badge {
+        background: #e0e7ff; color: #4338ca;
+        padding: 6px 16px; border-radius: 20px;
+        font-size: 0.85rem; font-weight: 700;
+        display: inline-block; margin-bottom: 10px;
+    }
+    .page-title {
+        font-size: 2.5rem; font-weight: 800; color: #1e293b;
+        margin-bottom: 10px;
+    }
+    .page-subtitle { color: #64748b; font-size: 1.1rem; }
+
+    .q-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+
+    .q-header {
+        padding: 15px 25px;
+        background: #f8fafc;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .unit-tag { font-size: 0.85rem; font-weight: 600; color: #475569; }
+    .badge-group { display: flex; gap: 8px; }
+
+    .badge { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
+    .badge-easy { background: #dcfce7; color: #166534; }
+    .badge-medium { background: #ffedd5; color: #9a3412; }
+    .badge-hard { background: #fee2e2; color: #991b1b; }
+    .badge-prob { background: #f3e8ff; color: #6b21a8; }
+
+    .q-body { padding: 25px; font-size: 1.1rem; line-height: 1.6; }
+
+    details summary {
+        padding: 15px 25px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #3b82f6;
+        list-style: none;
+    }
+
+    .answer-content {
+        padding: 25px;
+        background: white;
+        line-height: 1.7;
+    }
+
+    .back-btn {
+        display: inline-flex; align-items: center;
+        margin-bottom: 20px; color: #64748b;
+        text-decoration: none; font-weight: 500;
+    }
+
+    /* 🔒 SAME SECURITY CSS */
+    #secure-container,
+    #secure-container * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .blur-content {
+        filter: blur(15px);
+        pointer-events: none;
+    }
+</style>
+
+<div class="page-container" id="secure-container">
+
+    <a href="javascript:history.back()" class="back-btn">
+        <i class="ri-arrow-left-line" style="margin-right: 5px;"></i> Back
+    </a>
+
+    <div class="header-section">
+        <span class="header-badge">Premium Content</span>
+        <h1 class="page-title">{{ subject.name }} Question Bank</h1>
+        <div class="page-subtitle">90% Probability Questions</div>
+    </div>
+
+    {% for q in questions %}
+    <div class="q-card">
+
+        <div class="q-header">
+            <div class="unit-tag">
+                <i class="ri-book-mark-line"></i> {{ q.unit.title }}
+            </div>
+
+            <div class="badge-group">
+                {% if q.difficulty == 'easy' %}
+                    <span class="badge badge-easy">Easy</span>
+                {% elif q.difficulty == 'medium' %}
+                    <span class="badge badge-medium">Medium</span>
+                {% else %}
+                    <span class="badge badge-hard">Hard</span>
+                {% endif %}
+                <span class="badge badge-prob">{{ q.probability }}%</span>
+            </div>
+        </div>
+
+        <div class="q-body">
+            <strong>Q:</strong> {{ q.question_text|safe }}
+        </div>
+
+        <details>
+            <summary>Show Answer</summary>
+            <div class="answer-content">
+                {{ q.answer_text|safe }}
+            </div>
+        </details>
+
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+(function () {
+
+    const MAX_STRIKES = 10;
+    let violations = parseInt(localStorage.getItem("veda_violations") || "0");
+    const container = document.getElementById("secure-container");
+
+    function showWarning() {
+        alert(
+`⚠️ CONTENT SECURITY RULES ⚠️
+
+❌ NO screenshots or recording
+❌ NO tab or page switching
+❌ NO copying content
+
+PAGE CHANGE:
+➡️ Go BACK to DASHBOARD,
+then switch page.
+
+VIOLATIONS: ${violations} / ${MAX_STRIKES}
+
+🚫 AFTER 10 VIOLATIONS:
+ACCESS BLOCKED FOR 2 HOURS.
+
+By clicking OK, you accept these rules.`
+        );
+    }
+
+    function showBlockedMessage() {
+        alert(
+`🚫 ACCESS BLOCKED 🚫
+
+10 violations reached.
+
+Access BLOCKED
+for 2 HOURS.
+
+Contact admin if needed.`
+        );
+    }
+
+    function handleStrike() {
+        violations++;
+
+        if (violations >= MAX_STRIKES) {
+            showBlockedMessage();
+            localStorage.removeItem("veda_violations");
+            violations = 0;
+            window.location.href = "{% url 'home' %}";
+            return;
+        }
+
+        localStorage.setItem("veda_violations", violations);
+        container.style.visibility = "hidden";
+
+        setTimeout(() => {
+            showWarning();
+            container.style.visibility = "visible";
+        }, 100);
+    }
+
+    document.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("copy", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("cut", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("keydown", e => {
+        if (
+            e.keyCode === 123 ||
+            (e.ctrlKey && ["c","u","p","a","s"].includes(e.key.toLowerCase()))
+        ) {
+            e.preventDefault();
+            handleStrike();
+        }
+    });
+
+    window.addEventListener("blur", () => {
+        container.classList.add("blur-content");
+        handleStrike();
+    });
+
+    window.addEventListener("focus", () => {
+        container.classList.remove("blur-content");
+    });
+
+})();
+</script>
+
+{% endblock %}

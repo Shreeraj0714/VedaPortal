@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Premium Packages | VedaPortal{% endblock %}
+
+{% block content %}
+
+<style>
+    /* 1. LAYOUT & SIDEBAR */
+    nav, .navbar, header, .header { display: none !important; }
+    body { background-color: #fef2f2; overflow-x: hidden; }
+    .layout-container { display: flex; min-height: 100vh; }
+
+    .sidebar {
+        width: 260px; background: #1e293b; color: white;
+        display: flex; flex-direction: column; padding: 25px;
+        position: fixed; height: 100%; left: 0; top: 0; z-index: 1000;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+    }
+    .brand-logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; color: #fff; padding-left: 15px; border-left: 5px solid #ef4444; }
+    .nav-item { display: flex; align-items: center; padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; transition: all 0.2s; cursor: pointer; }
+    .nav-item:hover { background: rgba(255,255,255,0.1); color: white; transform: translateX(5px); }
+    .nav-icon { margin-right: 12px; }
+
+    .main-area { margin-left: 260px; padding: 30px 40px; width: 100%; }
+
+    /* HEADER */
+    .page-header { margin-bottom: 30px; }
+    .breadcrumb { color: #7f1d1d; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
+    
+    .page-title {
+        font-size: 1.8rem; font-weight: 800; color: #450a0a;
+        display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;
+    }
+    
+    /* GRID FOR CARDS */
+    .package-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    /* PREMIUM RED CARD STYLE */
+    .package-card {
+        background: white; 
+        border: 1px solid #fee2e2; 
+        border-top: 5px solid #dc2626; 
+        border-radius: 12px; 
+        padding: 20px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        transition: transform 0.3s, box-shadow 0.3s; 
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    
+    .package-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 15px 25px -5px rgba(220, 38, 38, 0.15); 
+    }
+
+    /* GOLDEN BADGE */
+    .badge-corner {
+        position: absolute; top: 0; right: 0;
+        background: linear-gradient(135deg, #f59e0b, #d97706); 
+        color: white;
+        font-size: 0.65rem; font-weight: 800;
+        padding: 5px 15px;
+        border-bottom-left-radius: 10px;
+        box-shadow: -2px 2px 5px rgba(217, 119, 6, 0.3);
+        text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        z-index: 2;
+    }
+
+    /* Header */
+    .card-header { margin-bottom: 15px; border-bottom: 1px dashed #fecaca; padding-bottom: 15px; }
+    
+    .branch-title { font-size: 1.3rem; font-weight: 800; color: #1e293b; margin-bottom: 3px; }
+    .subtitle { font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+    
+    .price-container { margin-top: 10px; display: flex; align-items: baseline; gap: 8px; }
+    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; }
+    .new-price { font-size: 1.8rem; font-weight: 800; color: #dc2626; }
+    .save-tag { 
+        background: #fef2f2; color: #dc2626; 
+        padding: 2px 6px; border-radius: 4px; 
+        font-size: 0.7rem; font-weight: 700; border: 1px solid #fca5a5; 
+    }
+
+    /* LIST */
+    .benefit-list { list-style: none; padding: 0; margin: 0 0 20px 0; }
+    .benefit-list li { 
+        font-size: 0.85rem; color: #475569; 
+        margin-bottom: 8px; display: flex; align-items: start; gap: 8px; 
+    }
+    .check-icon { 
+        color: #dc2626; font-weight: bold; background: #fef2f2; 
+        width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; 
+        border-radius: 50%; flex-shrink: 0; font-size: 0.7rem;
+    }
+
+    /* LIGHT RED BUTTON */
+    .btn-red { 
+        width: 100%; padding: 12px; border-radius: 8px; 
+        font-weight: 700; text-align: center; font-size: 0.95rem; 
+        cursor: pointer; border: none; text-decoration: none;
+        background: linear-gradient(135deg, #f87171, #ef4444); 
+        color: white; 
+        box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+        transition: all 0.2s;
+    }
+    .btn-red:hover { 
+        transform: scale(1.02); 
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4); 
+    }
+
+    /* =========================================
+       📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        /* Hide Sidebar */
+        .sidebar { display: none; }
+        
+        /* Full Width Main Area */
+        .main-area {
+            margin-left: 0;
+            padding: 20px; /* Reduced padding */
+            width: 100%;
+        }
+
+        /* Smaller Title */
+        .page-title {
+            font-size: 1.6rem;
+            flex-direction: column; /* Stack title and badge */
+            align-items: flex-start;
+        }
+
+        /* 1 Column Grid */
+        .package-grid {
+            grid-template-columns: 1fr; 
+            gap: 20px;
+        }
+
+        /* Mobile Back Link */
+        .mobile-back-link {
+            display: block !important;
+        }
+    }
+
+    /* Hide mobile back link on desktop */
+    .mobile-back-link {
+        display: none;
+        margin-bottom: 20px;
+        font-weight: 600;
+        color: #64748b;
+        text-decoration: none;
+    }
+
+</style>
+
+<div class="layout-container">
+
+    <div class="sidebar">
+        <div class="brand-logo">VedaPortal</div>
+        <a href="javascript:history.back()" class="nav-item">
+            <span class="nav-icon">⬅️</span> Back
+        </a>
+    </div>
+
+    <div class="main-area">
+        
+        <a href="javascript:history.back()" class="mobile-back-link">← Back</a>
+        
+        <div class="page-header">
+            <div class="breadcrumb">Premium Access</div>
+            <h1 class="page-title">
+                Semester Bundles
+                <span style="font-size: 0.8rem; background:#fee2e2; color:#b91c1c; padding:4px 10px; border-radius:20px; border:1px solid #fca5a5;">Limited Time Offer</span>
+            </h1>
+            <p style="color: #64748b; margin-top: 8px; font-size: 0.95rem; max-width: 600px;">
+                Get complete access to <strong>all subjects</strong> for your branch. Includes Notes, Question Banks, Solved Papers, and Last Minute Revision.
+            </p>
+        </div>
+
+        <div class="package-grid">
+            
+            <div class="package-card">
+                <div class="badge-corner">HOT SELLER</div>
+                <div class="card-header">
+                    <div class="branch-title">FY CSE</div>
+                    <div class="subtitle">Complete Semester Access</div>
+                    <div class="price-container">
+                        <span class="old-price">₹788</span>
+                        <span class="new-price">₹449</span>
+                        <span class="save-tag">SAVE ₹339</span>
+                    </div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span class="check-icon">✓</span> <strong>Subjects:</strong> Maths-1, Physics, CPPS, OS</li>
+                    <li><span class="check-icon">✓</span> Solved Exam Ready Question Banks</li>
+                    <li><span class="check-icon">✓</span> Solved Expected Question Papers</li>
+                    <li><span class="check-icon">✓</span> Last Minute Revision Notes</li>
+                    <li><span class="check-icon">✓</span> Solved Previous Year Question Papers</li>
+                </ul>
+                <button onclick="startPackagePayment(449, 'CSE Full Bundle')" class="btn-red">Unlock Now</button>
+            </div>
+
+            <div class="package-card">
+                <div class="badge-corner">HOT SELLER</div>
+                <div class="card-header">
+                    <div class="branch-title">FY Data Science</div>
+                    <div class="subtitle">Complete Semester Access</div>
+                    <div class="price-container">
+                        <span class="old-price">₹788</span>
+                        <span class="new-price">₹449</span>
+                        <span class="save-tag">SAVE ₹339</span>
+                    </div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span class="check-icon">✓</span> <strong>Subjects:</strong> Maths-1, Physics, C-Prog, DEM</li>
+                    <li><span class="check-icon">✓</span> Solved Exam Ready Question Banks</li>
+                    <li><span class="check-icon">✓</span> Solved Expected Question Papers</li>
+                    <li><span class="check-icon">✓</span> Last Minute Revision Notes</li>
+                    <li><span class="check-icon">✓</span> Solved Previous Year Question Papers</li>
+                </ul>
+                <button onclick="startPackagePayment(449, 'DS Full Bundle')" class="btn-red">Unlock Now</button>
+            </div>
+
+            <div class="package-card">
+                <div class="badge-corner">HOT SELLER</div>
+                <div class="card-header">
+                    <div class="branch-title">FY AIML</div>
+                    <div class="subtitle">Complete Semester Access</div>
+                    <div class="price-container">
+                        <span class="old-price">₹788</span>
+                        <span class="new-price">₹449</span>
+                        <span class="save-tag">SAVE ₹339</span>
+                    </div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span class="check-icon">✓</span> <strong>Subjects:</strong> Maths-1, Physics, C-Prog, DEM</li>
+                    <li><span class="check-icon">✓</span> Solved Exam Ready Question Banks</li>
+                    <li><span class="check-icon">✓</span> Solved Expected Question Papers</li>
+                    <li><span class="check-icon">✓</span> Last Minute Revision Notes</li>
+                    <li><span class="check-icon">✓</span> Solved Previous Year Question Papers</li>
+                </ul>
+                <button onclick="startPackagePayment(449, 'AIML Full Bundle')" class="btn-red">Unlock Now</button>
+            </div>
+
+            <div class="package-card">
+                <div class="badge-corner">HOT SELLER</div>
+                <div class="card-header">
+                    <div class="branch-title">FY Civil Engg</div>
+                    <div class="subtitle">Complete Semester Access</div>
+                    <div class="price-container">
+                        <span class="old-price">₹591</span>
+                        <span class="new-price">₹349</span>
+                        <span class="save-tag">SAVE ₹242</span>
+                    </div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span class="check-icon">✓</span> <strong>Subjects:</strong> Maths-1, Gen AI, Chemistry</li>
+                    <li><span class="check-icon">✓</span> Solved Exam Ready Question Banks</li>
+                    <li><span class="check-icon">✓</span> Solved Expected Question Papers</li>
+                    <li><span class="check-icon">✓</span> Last Minute Revision Notes</li>
+                    <li><span class="check-icon">✓</span> Solved Previous Year Question Papers</li>
+                </ul>
+                <button onclick="startPackagePayment(349, 'Civil Full Bundle')" class="btn-red">Unlock Now</button>
+            </div>
+
+            <div class="package-card">
+                <div class="badge-corner">HOT SELLER</div>
+                <div class="card-header">
+                    <div class="branch-title">FY Mechanical</div>
+                    <div class="subtitle">Complete Semester Access</div>
+                    <div class="price-container">
+                        <span class="old-price">₹591</span>
+                        <span class="new-price">₹349</span>
+                        <span class="save-tag">SAVE ₹242</span>
+                    </div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span class="check-icon">✓</span> <strong>Subjects:</strong> Linear Algebra, Gen AI, Chem</li>
+                    <li><span class="check-icon">✓</span> Solved Exam Ready Question Banks</li>
+                    <li><span class="check-icon">✓</span> Solved Expected Question Papers</li>
+                    <li><span class="check-icon">✓</span> Last Minute Revision Notes</li>
+                    <li><span class="check-icon">✓</span> Solved Previous Year Question Papers</li>
+                </ul>
+                <button onclick="startPackagePayment(349, 'Mechanical Full Bundle')" class="btn-red">Unlock Now</button>
+            </div>
+
+            <div class="package-card">
+                <div class="badge-corner">HOT SELLER</div>
+                <div class="card-header">
+                    <div class="branch-title">FY E&TC</div>
+                    <div class="subtitle">Complete Semester Access</div>
+                    <div class="price-container">
+                        <span class="old-price">₹591</span>
+                        <span class="new-price">₹349</span>
+                        <span class="save-tag">SAVE ₹242</span>
+                    </div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span class="check-icon">✓</span> <strong>Subjects:</strong> Linear Algebra, Gen AI, Chem</li>
+                    <li><span class="check-icon">✓</span> Solved Exam Ready Question Banks</li>
+                    <li><span class="check-icon">✓</span> Solved Expected Question Papers</li>
+                    <li><span class="check-icon">✓</span> Last Minute Revision Notes</li>
+                    <li><span class="check-icon">✓</span> Solved Previous Year Question Papers</li>
+                </ul>
+                <button onclick="startPackagePayment(349, 'ENTC Full Bundle')" class="btn-red">Unlock Now</button>
+            </div>
+
+             <div class="package-card">
+                <div class="badge-corner">HOT SELLER</div>
+                <div class="card-header">
+                    <div class="branch-title">FY Chemical Engg</div>
+                    <div class="subtitle">Complete Semester Access</div>
+                    <div class="price-container">
+                        <span class="old-price">₹591</span>
+                        <span class="new-price">₹349</span>
+                        <span class="save-tag">SAVE ₹242</span>
+                    </div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span class="check-icon">✓</span> <strong>Subjects:</strong> Linear Algebra, Gen AI, Chem</li>
+                    <li><span class="check-icon">✓</span> Solved Exam Ready Question Banks</li>
+                    <li><span class="check-icon">✓</span> Solved Expected Question Papers</li>
+                    <li><span class="check-icon">✓</span> Last Minute Revision Notes</li>
+                    <li><span class="check-icon">✓</span> Solved Previous Year Question Papers</li>
+                </ul>
+                <button onclick="startPackagePayment(349, 'Chemical Full Bundle')" class="btn-red">Unlock Now</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+function startPackagePayment(amount, bundleName) {
+    // Redirects to payment page with details in the URL
+    window.location.href = "{% url 'payment' %}?amount=" + amount + "&item=" + encodeURIComponent(bundleName);
+}
+</script>
+
+{% endblock %}

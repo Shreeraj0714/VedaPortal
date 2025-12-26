@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Previous Year Papers | {{ subject.name }}{% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+    body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+    .page-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+
+    .header-section { margin-bottom: 40px; text-align: center; }
+    .header-badge {
+        background: #f3e8ff; color: #7e22ce;
+        padding: 6px 16px; border-radius: 20px;
+        font-size: 0.85rem; font-weight: 700;
+        display: inline-block; margin-bottom: 10px;
+    }
+    .page-title { font-size: 2.5rem; font-weight: 800; color: #1e293b; }
+    .page-subtitle { color: #64748b; font-size: 1.1rem; }
+
+    .pyq-card {
+        background: white; border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 30px; border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+    .pyq-header {
+        background: linear-gradient(to right, #faf5ff, #fff);
+        padding: 20px 30px; border-bottom: 1px solid #e9d5ff;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .pyq-title-group { display: flex; align-items: center; }
+    .pyq-icon {
+        width: 40px; height: 40px;
+        background: #9333ea; color: white;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        margin-right: 15px;
+    }
+    .pyq-title { font-size: 1.2rem; font-weight: 700; }
+    .year-badge {
+        background: #334155; color: white;
+        padding: 4px 10px; border-radius: 6px;
+        font-size: 0.85rem; font-weight: 600;
+    }
+
+    .content-box { padding: 30px; line-height: 1.8; }
+
+    details { border-top: 1px solid #e2e8f0; background: #f8fafc; }
+    summary {
+        padding: 15px 30px; cursor: pointer;
+        font-weight: 600; color: #9333ea;
+        list-style: none; display: flex; align-items: center;
+    }
+    summary::before { content: '🔒'; margin-right: 10px; }
+    details[open] summary::before { content: '🔓'; }
+    .solution-body { padding: 30px; background: white; }
+
+    /* 🔒 SAME SECURITY CSS */
+    #secure-container,
+    #secure-container * {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .blur-content {
+        filter: blur(15px);
+        pointer-events: none;
+    }
+</style>
+
+<div class="page-container" id="secure-container">
+    <a href="javascript:history.back()">← Back</a>
+
+    <div class="header-section">
+        <span class="header-badge">Previous Year Paper</span>
+        <h1 class="page-title">{{ subject.name }} PYQs</h1>
+        <div class="page-subtitle">Solved Last Year College Paper</div>
+    </div>
+
+    {% for paper in papers %}
+    <div class="pyq-card">
+        <div class="pyq-header">
+            <div class="pyq-title-group">
+                <div class="pyq-icon"><i class="ri-history-line"></i></div>
+                <div class="pyq-title">{{ paper.title }}</div>
+            </div>
+            <div class="year-badge">{{ paper.year }}</div>
+        </div>
+
+        <div class="content-box">
+            {{ paper.paper_content|safe }}
+        </div>
+
+        {% if paper.solution_content %}
+        <details>
+            <summary>View Solution Key</summary>
+            <div class="solution-body">
+                {{ paper.solution_content|safe }}
+            </div>
+        </details>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+(function () {
+
+    const MAX_STRIKES = 10;
+    let violations = parseInt(localStorage.getItem("veda_violations") || "0");
+    const container = document.getElementById("secure-container");
+
+    function showWarning() {
+        alert(
+`⚠️ CONTENT SECURITY RULES ⚠️
+
+❌ NO screenshots or recording
+❌ NO tab or page switching
+❌ NO copying content
+
+PAGE CHANGE:
+➡️ Go BACK to DASHBOARD,
+then switch page.
+
+VIOLATIONS: ${violations} / ${MAX_STRIKES}
+
+🚫 AFTER 10 VIOLATIONS:
+ACCESS BLOCKED FOR 2 HOURS.
+
+By clicking OK, you accept these rules.`
+        );
+    }
+
+    function showBlockedMessage() {
+        alert(
+`🚫 ACCESS BLOCKED 🚫
+
+10 violations reached.
+
+Access BLOCKED
+for 2 HOURS.
+
+Contact admin if needed.`
+        );
+    }
+
+    function handleStrike() {
+        violations++;
+
+        if (violations >= MAX_STRIKES) {
+            showBlockedMessage();
+            localStorage.removeItem("veda_violations");
+            violations = 0;
+            window.location.href = "{% url 'home' %}";
+            return;
+        }
+
+        localStorage.setItem("veda_violations", violations);
+        container.style.visibility = "hidden";
+
+        setTimeout(() => {
+            showWarning();
+            container.style.visibility = "visible";
+        }, 100);
+    }
+
+    document.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("copy", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("cut", e => {
+        e.preventDefault();
+        handleStrike();
+    });
+
+    document.addEventListener("keydown", e => {
+        if (
+            e.keyCode === 123 ||
+            (e.ctrlKey && ["c","u","p","a","s"].includes(e.key.toLowerCase()))
+        ) {
+            e.preventDefault();
+            handleStrike();
+        }
+    });
+
+    window.addEventListener("blur", () => {
+        container.classList.add("blur-content");
+        handleStrike();
+    });
+
+    window.addEventListener("focus", () => {
+        container.classList.remove("blur-content");
+    });
+
+})();
+</script>
+
+{% endblock %}

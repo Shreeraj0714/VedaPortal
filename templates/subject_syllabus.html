@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Syllabus | VedaPortal{% endblock %}
+
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+    /* DESKTOP STYLES (Default) */
+    nav, .navbar, header, .header { display: none !important; }
+    body { background-color: #f1f5f9; overflow-x: hidden; }
+    .layout-container { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 260px;
+        background: var(--primary-slate);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 25px;
+        position: fixed;
+        height: 100%;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        border-right: 1px solid #334155;
+    }
+
+    .brand-logo {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 40px;
+        color: #fff;
+        padding-left: 15px;
+        border-left: 5px solid var(--accent-blue);
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        color: #cbd5e1;
+        text-decoration: none;
+        border-radius: 6px;
+        margin-bottom: 5px;
+        transition: all 0.2s;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .nav-item:hover {
+        background: rgba(255,255,255,0.05);
+        color: white;
+    }
+
+    .nav-icon {
+        margin-right: 12px;
+        font-size: 1.1rem;
+    }
+
+    /* MAIN AREA */
+    .main-area {
+        margin-left: 260px; /* Keeps space for sidebar on Desktop */
+        padding: 50px 80px;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .breadcrumb {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .breadcrumb a { color: var(--accent-blue); text-decoration: none; }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 40px;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
+    }
+
+    .units-container { display: flex; flex-direction: column; gap: 25px; }
+
+    .unit-block {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .unit-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid #f1f5f9;
+        font-weight: 700;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        border-left: 4px solid var(--accent-blue);
+    }
+
+    .header-icon {
+        margin-right: 15px;
+        font-size: 1.2rem;
+        color: var(--accent-blue);
+        background: #eff6ff;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+    }
+
+    .topic-list { list-style: none; margin: 0; padding: 0; }
+
+    .topic-item {
+        display: flex;
+        align-items: center;
+        padding: 14px 25px;
+        border-bottom: 1px solid #f8fafc;
+        text-decoration: none;
+        color: #475569;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .topic-item:hover {
+        background: #f8fafc;
+        color: var(--accent-blue);
+    }
+
+    .topic-icon {
+        margin-right: 12px;
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+    /* =========================================
+       📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        /* Hide the sidebar to save space */
+        .sidebar { display: none; }
+
+        /* Make main area full width */
+        .main-area {
+            margin-left: 0 !important;
+            padding: 20px !important;
+            width: 100%;
+        }
+
+        /* Smaller fonts for mobile */
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        .unit-header {
+            padding: 15px 20px;
+            font-size: 1rem;
+        }
+
+        .topic-item {
+            padding: 12px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Show the Back link that we added below */
+        .mobile-back-link {
+            display: block !important;
+        }
+    }
+
+    /* Hide mobile back link on desktop */
+    .mobile-back-link {
+        display: none;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #64748b;
+        text-decoration: none;
+    }
+</style>
+
+<div class="layout-container">
+
+    <div class="sidebar">
+        <div class="brand-logo">VedaPortal</div>
+
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="ri-dashboard-line nav-icon"></i> Back to Dashboard
+        </a>
+
+        <a href="javascript:history.back()" class="nav-item">
+            <i class="ri-arrow-left-line nav-icon"></i> Back to Subjects
+        </a>
+    </div>
+
+    <div class="main-area">
+
+        <a href="javascript:history.back()" class="mobile-back-link">← Back</a>
+
+        <div class="breadcrumb">
+            Resources <i class="ri-arrow-right-s-line"></i> {{ subject|title }}
+        </div>
+
+        <h1 class="page-title">
+            {% if subject == 'comp-prog' %}Computer Programming
+            {% else %}{{ subject|title }}{% endif %}
+        </h1>
+
+        <div class="units-container">
+            {% for unit in units %}
+            <div class="unit-block">
+
+                <div class="unit-header">
+                    <span class="header-icon"><i class="ri-book-mark-line"></i></span>
+                    {{ unit.title }}
+                </div>
+
+                <div class="topic-list">
+                    {% for topic in unit.topics.all %}
+                    <a href="{% url 'topic_reader' topic.id %}" class="topic-item">
+                        <i class="ri-file-text-line topic-icon"></i> {{ topic.title }}
+                    </a>
+                    {% endfor %}
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

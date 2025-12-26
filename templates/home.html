@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | VedaPortal{% endblock %}
+
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+    /* GLOBAL LAYOUT (Desktop Default) */
+    nav, .navbar, header, .header { display: none !important; }
+    body { background-color: var(--bg-body); overflow-x: hidden; }
+    .dashboard-container { display: flex; min-height: 100vh; }
+
+    /* === SIDEBAR === */
+    .sidebar {
+        width: 260px;
+        background: #1e293b;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100%;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+        border-right: 1px solid #1e293b;
+    }
+
+    .sidebar-header { padding: 30px 25px; display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 32px; height: 32px; background: #3b82f6; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; }
+    .brand-text { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; color: white; }
+
+    .menu-label { font-size: 0.7rem; text-transform: uppercase; color: #64748b; letter-spacing: 1px; padding: 0 25px; margin-top: 20px; margin-bottom: 10px; font-weight: 700; }
+
+    .nav-links { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+
+    .nav-item {
+        display: flex; align-items: center; padding: 12px 16px;
+        color: #cbd5e1; text-decoration: none; border-radius: 6px;
+        transition: all 0.2s ease; font-size: 0.95rem; font-weight: 500; cursor: pointer;
+    }
+    .nav-item i { font-size: 1.2rem; margin-right: 12px; opacity: 0.8; width: 20px; text-align: center; }
+    .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+    .nav-item:hover i { opacity: 1; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; font-weight: 600; }
+    .nav-item.active i { color: #60a5fa; opacity: 1; }
+
+    /* Premium Link */
+    .nav-item.premium-link { background: linear-gradient(90deg, rgba(220, 38, 38, 0.1), transparent); color: #fca5a5; border: 1px solid rgba(220, 38, 38, 0.2); }
+    .nav-item.premium-link:hover { background: linear-gradient(90deg, rgba(220, 38, 38, 0.2), transparent); color: #fff; border-color: #ef4444; }
+    .nav-item.premium-link i { color: #f87171; }
+
+    .sidebar-footer { margin-top: auto; padding: 20px; border-top: 1px solid #1e293b; }
+    .user-mini-profile { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; background: #1e293b; }
+    .user-avatar { width: 35px; height: 35px; background: #475569; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+    .user-info { font-size: 0.85rem; line-height: 1.2; }
+    .user-name { display: block; font-weight: 600; color: white; }
+    .user-role { font-size: 0.75rem; color: #94a3b8; }
+
+    /* === MAIN CONTENT === */
+    .main-content { margin-left: 260px; flex-grow: 1; padding: 40px; width: 100%; }
+    .welcome-header { margin-bottom: 30px; }
+    .welcome-header h1 { color: #0f172a; margin: 0; font-size: 2rem; font-weight: 800; }
+    .welcome-header p { color: #64748b; margin-top: 8px; }
+
+    /* Premium Banner */
+    .premium-banner {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+        border-radius: 16px; padding: 30px; color: white;
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 40px; box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.3);
+        position: relative; overflow: hidden;
+    }
+    .premium-banner::after { content: "⚡"; position: absolute; right: -20px; bottom: -20px; font-size: 10rem; opacity: 0.1; transform: rotate(-20deg); pointer-events: none; }
+    .banner-content h2 { margin: 0 0 10px 0; font-size: 1.8rem; }
+    .banner-content p { margin: 0; opacity: 0.9; font-size: 1rem; max-width: 500px; }
+    .btn-white { background: white; color: #b91c1c; padding: 12px 25px; border-radius: 8px; font-weight: 700; text-decoration: none; display: inline-block; transition: transform 0.2s; z-index: 2; position: relative; }
+    .btn-white:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+    /* === CARDS === */
+    .grid-container { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+        gap: 25px; 
+    }
+    .dashboard-card {
+        background: white; border-radius: 12px; 
+        padding: 20px; 
+        border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dashboard-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: #3b82f6; }
+    
+    .card-title { 
+        font-size: 1.1rem; 
+        font-weight: 700; color: #1e293b; margin-bottom: 15px; 
+        display: flex; justify-content: space-between; align-items: center; 
+    }
+    
+    .cycle-link {
+        display: flex; justify-content: space-between; padding: 12px; 
+        background-color: #f8fafc; color: #334155; text-decoration: none;
+        border-radius: 8px; margin-bottom: 10px; font-weight: 600; font-size: 0.9rem;
+        transition: background 0.2s; border: 1px solid #e2e8f0;
+    }
+    .cycle-link:hover { background-color: #eff6ff; border-color: #3b82f6; color: #2563eb; }
+    
+    .card-locked { background: #f8fafc; border: 1px dashed #cbd5e1; opacity: 0.8; }
+    .badge-wip { background: #eab308; color: white; font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; }
+    
+    .premium-notice {
+        margin-top: 40px; background: linear-gradient(to right, #fffbeb, #fff1f2);
+        border: 1px solid #fcd34d; padding: 20px; border-radius: 8px;
+        display: flex; gap: 15px; color: #92400e; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Modal Styles */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 20px; }
+    .modal-box { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); animation: popIn 0.3s ease; }
+    .contact-row { background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; text-align: left; }
+    .c-label { font-size: 0.8rem; color: #64748b; display: block; }
+    .c-value { font-weight: 600; color: #334155; font-size: 0.95rem; }
+    .close-modal { background: #3b82f6; color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    .input-feedback { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; resize: vertical; font-family: inherit; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+    /* =========================================
+       📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        /* Hide Sidebar */
+        .sidebar { display: none; }
+        
+        /* Full Width Content */
+        .main-content {
+            margin-left: 0;
+            padding: 20px;
+            width: 100%;
+        }
+
+        /* Banner Stack */
+        .premium-banner {
+            flex-direction: column;
+            text-align: center;
+            padding: 25px;
+        }
+        .banner-content { margin-bottom: 20px; }
+        .banner-content h2 { font-size: 1.5rem; }
+
+        /* Single Column Grid */
+        .grid-container {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        /* Smaller Fonts */
+        .welcome-header h1 { font-size: 1.8rem; }
+        
+        /* Mobile Nav (Simple Bottom Bar or just rely on content links) */
+        /* For now, users can navigate via the dashboard cards */
+        
+        /* Settings Menu Adjustments */
+        #settings-menu {
+            position: relative; 
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <div class="sidebar">
+        
+        <div class="sidebar-header">
+            <div class="logo-icon">V</div>
+            <div class="brand-text">VedaPortal</div>
+        </div>
+
+        <div class="menu-label">Main Menu</div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-item active">
+                <i class="ri-dashboard-line"></i> Dashboard
+            </a>
+            <a href="{% url 'packages' %}" class="nav-item premium-link">
+                <i class="ri-vip-diamond-line"></i> Premium Packages
+            </a>
+            <a href="{% url 'payment' %}" class="nav-item">
+                <i class="ri-secure-payment-line"></i> My Payments
+            </a>
+        </div>
+
+        <div class="menu-label">Support</div>
+        <div class="nav-links">
+            <div class="nav-item" onclick="openHelp()">
+                <i class="ri-question-line"></i> Help Center
+            </div>
+            
+            <div class="nav-item" onclick="openFeedback()">
+                <i class="ri-chat-smile-3-line"></i> Feedback
+            </div>
+            
+            <div class="nav-item" onclick="toggleSettings()">
+                <i class="ri-settings-4-line"></i> Settings
+            </div>
+            
+            <div id="settings-menu" style="display:none; padding-left: 20px;">
+                <a href="{% url 'logout' %}" class="nav-item" style="color: #ef4444;">
+                    <i class="ri-logout-box-line"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-mini-profile">
+                <div class="user-avatar">
+                    {{ user.username|slice:":1" }} </div>
+                <div class="user-info">
+                    <span class="user-name">Student</span>
+                    <span class="user-role">{{ user.username }}</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="main-content">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" class="mobile-only-header">
+             <div style="font-weight:800; font-size:1.2rem; color:#1e293b;">VedaPortal</div>
+             <a href="{% url 'logout' %}" style="color:#ef4444; font-size:1.5rem;"><i class="ri-logout-box-r-line"></i></a>
+        </div>
+
+        <div class="welcome-header">
+            <h1>Welcome Back!</h1>
+            <p>Access your structured notes and premium exam resources.</p>
+        </div>
+
+        <div class="premium-banner">
+            <div class="banner-content">
+                <h2>Unlock Full Semester Bundles</h2>
+                <p>Get all subject notes, question banks, and solved papers for your branch at one low price.</p>
+            </div>
+            <a href="{% url 'packages' %}" class="btn-white">View Offers</a>
+        </div>
+
+        <div class="grid-container">
+            <div class="dashboard-card">
+                <div class="card-title">
+                    FY – First Year
+                    <span style="font-size: 0.75rem; color: #10b981; background: #ecfdf5; padding: 3px 8px; border-radius: 12px;">Active</span>
+                </div>
+                <a href="{% url 'fy_semester' semester='physics-cycle' %}" class="cycle-link">
+                    <span><i class="ri-flashlight-fill" style="color:#eab308; margin-right:8px;"></i> Physics Cycle</span> 
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+                <a href="{% url 'fy_semester' semester='chemistry-cycle' %}" class="cycle-link">
+                    <span><i class="ri-flask-fill" style="color:#10b981; margin-right:8px;"></i> Chemistry Cycle</span> 
+                    <i class="ri-arrow-right-line"></i>
+                </a>
+            </div>
+
+            <div class="dashboard-card card-locked">
+                <div class="card-title">
+                    SY – Second Year
+                    <span class="badge-wip">Coming Soon</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
+                    Content for the second year is currently under development.
+                </p>
+            </div>
+        </div>
+
+        <div class="premium-notice">
+            <div style="font-size: 1.5rem;"><i class="ri-lock-2-fill"></i></div>
+            <div>
+                <strong style="display: block; margin-bottom: 5px; color: #b45309;">Premium Content Notice</strong>
+                IMP Questions, Question Banks, and Expected Papers are locked for basic users.
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .mobile-only-header { display: none !important; }
+    @media (max-width: 768px) {
+        .mobile-only-header { display: flex !important; }
+    }
+</style>
+
+<div id="helpModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 style="margin-bottom: 20px; color: #1e293b;">Help & Support</h3>
+        <div class="contact-row">
+    <div style="font-size: 1.5rem; color: #25d366;">
+        <i class="ri-whatsapp-fill"></i>
+    </div>
+    <div>
+        <span class="c-label">WhatsApp</span>
+        <a class="c-value" 
+           href="https://wa.me/919890591422" 
+           target="_blank"
+           style="text-decoration:none; color:#334155;">
+            9890591422
+        </a>
+    </div>
+</div>
+
+<div class="contact-row">
+    <div style="font-size: 1.5rem; color: #ea4335;">
+        <i class="ri-mail-fill"></i>
+    </div>
+    <div>
+        <span class="c-label">Email</span>
+        <a class="c-value" 
+           href="mailto:vedaaportal@gmail.com"
+           style="text-decoration:none; color:#334155;">
+            vedaaportal@gmail.com
+        </a>
+    </div>
+</div>
+
+        <button class="close-modal" onclick="closeHelp()">Close</button>
+    </div>
+</div>
+
+<div id="feedbackModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 style="margin-bottom: 15px; color: #1e293b;">Share Feedback</h3>
+        <p style="color: #64748b; margin-bottom: 20px; font-size: 0.9rem;">Help us improve VedaPortal.</p>
+        <textarea class="input-feedback" rows="4" placeholder="Type your suggestion here..."></textarea>
+        <button class="close-modal" style="background: #10b981;" onclick="submitFeedback()">Submit Feedback</button>
+        <button onclick="closeFeedback()" style="background:none; border:none; color:#64748b; margin-top:10px; cursor:pointer;">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function toggleSettings() {
+        var menu = document.getElementById("settings-menu");
+        menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    }
+
+    function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
+    function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+
+    function openFeedback() { document.getElementById('feedbackModal').style.display = 'flex'; }
+    function closeFeedback() { document.getElementById('feedbackModal').style.display = 'none'; }
+    
+    function submitFeedback() {
+        // Just a simulation for frontend
+        alert("Thank you! Your feedback has been sent.");
+        closeFeedback();
+    }
+</script>
+
+{% endblock %}

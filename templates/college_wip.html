@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* 1. HIDE NAVBAR */
+    nav, .navbar, header, .header { display: none !important; }
+
+    /* 2. CENTER CONTENT */
+    body {
+        background-color: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh; /* Centers vertically */
+        font-family: 'Inter', sans-serif;
+    }
+
+    .wip-container {
+        text-align: center;
+        background: white;
+        padding: 50px;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        max-width: 500px;
+        width: 90%; /* Responsive width */
+        margin: 20px;
+    }
+
+    h2 {
+        color: #1e293b;
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        font-weight: 800;
+    }
+
+    p {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        line-height: 1.5;
+    }
+
+    /* 3. BUTTON STYLE BACK LINK */
+    .btn-back {
+        display: inline-block;
+        background-color: #3b82f6;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-back:hover {
+        transform: translateY(-2px);
+        background-color: #2563eb;
+    }
+
+    /* 4. LARGE ICON */
+    .icon-construction {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    /* =========================================
+       📱 MOBILE OPTIMIZATION
+       ========================================= */
+    @media (max-width: 768px) {
+        .wip-container {
+            padding: 30px 20px; /* Smaller padding */
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        p {
+            font-size: 1rem;
+        }
+
+        .btn-back {
+            width: 100%; /* Full width button is easier to tap */
+            display: block;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="wip-container">
+    <span class="icon-construction">🚧</span>
+    <h2>Work in Progress</h2>
+    <p>We are currently uploading content for this college. Please check back later!</p>
+    
+    <a href="javascript:history.back()" class="btn-back">← Go Back</a>
+</div>
+
+{% endblock %}

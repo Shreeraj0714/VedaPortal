@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>{% block title %}VedaPortal | Premium Academic Resources{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-slate: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-hover: #2563eb;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --radius-md: 10px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            /* GLOBAL COPY PROTECTION CSS */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Basic Mobile Responsiveness */
+        @media (max-width: 768px) {
+            body { font-size: 15px; } 
+            img { max-width: 100%; height: auto; }
+        }
+
+        /* Print Hiding */
+        @media print { html { display: none; } }
+    </style>
+</head>
+
+<body>
+
+    <div id="main-app-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+
+    <script>
+        /* ==========================================
+           1. INSTANT LOGOUT (WEBSOCKET)
+           ========================================== */
+        {% if user.is_authenticated %}
+        (function() {
+            const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const socketUrl = protocol + window.location.host + '/ws/logout/';
+            const logoutSocket = new WebSocket(socketUrl);
+
+            logoutSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.action === "logout") {
+                    alert(data.message);
+                    window.location.href = "{% url 'login' %}"; 
+                }
+            };
+
+            logoutSocket.onclose = function(e) {
+                console.log('Security socket closed. Reconnecting in 5s...');
+                setTimeout(() => { 
+                    // Refresh to check if session is still valid via middleware
+                    window.location.reload(); 
+                }, 5000);
+            };
+
+            logoutSocket.onerror = function(err) {
+                console.error('Socket encountered error: ', err.message, 'Closing socket');
+                logoutSocket.close();
+            };
+        })();
+        {% endif %}
+
+        /* ==========================================
+           2. COPY & RIGHT-CLICK PROTECTION
+           ========================================== */
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        document.addEventListener('copy', (e) => {
+            e.preventDefault();
+            return false;
+        });
+
+        document.onkeydown = function(e) {
+            // Disable Ctrl+C, Ctrl+U, Ctrl+S
+            if(e.ctrlKey && (e.key === 'c' || e.key === 'C' || e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) {
+                return false;
+            }
+        };
+
+        /* ==========================================
+           3. AUTO CODE HIGHLIGHTING
+           ========================================== */
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("pre code").forEach(function (block) {
+                if (!block.className.includes("language-")) {
+                    block.classList.add("language-c");
+                }
+            });
+            Prism.highlightAll();
+        });
+    </script>
+
+</body>
+</html>

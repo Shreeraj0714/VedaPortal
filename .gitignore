@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# Django
+db.sqlite3
+*.log
+media/
+
+# Static collected files
+staticfiles/
+
+# Dumps / fixtures / backups
+data.json
+data_no_profile.json
+content_data.json
+
+# Editor
+.vscode/
+.idea/
+
