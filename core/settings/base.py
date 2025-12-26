@@ -34,8 +34,13 @@ INSTALLED_APPS = [
     'channels',
     'ckeditor',
     'ckeditor_uploader',
+    
+    'rest_framework',
 
     'main.apps.MainConfig',
+    
+    'api.apps.ApiConfig',
+
 ]
 
 
@@ -44,6 +49,7 @@ INSTALLED_APPS = [
 # =========================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ ADD THIS
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

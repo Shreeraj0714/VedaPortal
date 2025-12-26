@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import include
+
 
 # Import ALL functions from your views.py
 from main.views import (
@@ -21,6 +23,10 @@ urlpatterns = [
     # Admin
     # -------------------------
     path('admin/', admin.site.urls),
+    
+    
+    path('api/', include('api.urls')),
+
 
     # -------------------------
     # CKEditor Image Uploader
