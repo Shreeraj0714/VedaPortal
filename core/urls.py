@@ -91,3 +91,26 @@ if settings.DEBUG:
 
 
 
+from django.urls import path
+from django.http import HttpResponse
+from django.contrib.sites.models import Site
+
+# --- TEMPORARY FIXER VIEW ---
+def fix_site_domain(request):
+    try:
+        # Get the default site (ID=1)
+        site = Site.objects.get(id=1)
+        
+        # UPDATE THIS TO YOUR EXACT RAILWAY DOMAIN
+        site.domain = 'web-production-5294.up.railway.app' 
+        site.name = 'VedaPortal'
+        site.save()
+        
+        return HttpResponse(f"<h1>✅ SUCCESS!</h1> <p>Domain updated to: {site.domain}</p> <p>You can now <a href='/admin/'>Login to Admin</a></p>")
+    except Exception as e:
+        return HttpResponse(f"<h1>❌ Error</h1> <p>{e}</p>")
+
+# Add this to your urlpatterns list
+urlpatterns += [
+    path('fix-db/', fix_site_domain),
+]
