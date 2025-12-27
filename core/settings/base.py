@@ -14,12 +14,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = 'django-insecure-change-this-later'
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".railway.app",
-]
+# 1. Get hosts from environment variables (Railway)
+# 2. Provide local defaults if the environment variable is missing
+hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
+# 3. Combine with any static domains you want to always allow
+ALLOWED_HOSTS = hosts + [
+    'web-production-5294.up.railway.app', 
+    '.vercel.app'
+]
 
 # =========================
 # APPLICATIONS
