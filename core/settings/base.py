@@ -145,7 +145,10 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+# Force files to the top level folder
+STATIC_ROOT = os.path.join(BASE_DIR, '..', 'staticfiles')
+
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # ✅ ADD this line instead (Safe Mode):
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
