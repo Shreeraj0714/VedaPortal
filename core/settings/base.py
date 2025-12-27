@@ -5,57 +5,48 @@ Django settings for core project.
 from pathlib import Path
 import os
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 # ✅ CORRECT (Standard Django structure)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # =========================
-# SECURITY
+# SECURITY (RESCUE MODE)
 # =========================
-# SECRET_KEY = 'django-insecure-change-this-later'
-# DEBUG = True
-# ==============================================
-# 1. SECURITY SETTINGS (Rescue Mode)
-# ==============================================
 SECRET_KEY = 'django-insecure-change-this-later'
 
-# ✅ Turn DEBUG back ON to fix the 500 Error immediately
+# ✅ DEBUG = True prevents the 500 Server Error
 DEBUG = True
 
-# 1. Get hosts from environment variables (Railway)
-# 2. Provide local defaults if the environment variable is missing
-hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+# ✅ ALLOWED_HOSTS: accepting all temporarily to ensure site loads
+ALLOWED_HOSTS = ['*']
 
-# 3. Combine with any static domains you want to always allow
-ALLOWED_HOSTS = hosts + [
-    'web-production-5294.up.railway.app', 
-    '.vercel.app'
+# CSRF Trusted Origins (Helps with login issues)
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-5294.up.railway.app',
+    'https://*.railway.app',
+    'https://*.vercel.app'
 ]
+
 
 # =========================
 # APPLICATIONS
 # =========================
 INSTALLED_APPS = [
     'daphne',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',  # ✅ REQUIRED
+    'django.contrib.staticfiles',
     'django.contrib.sites',
-
     'channels',
     'ckeditor',
     'ckeditor_uploader',
-    
     'rest_framework',
-
     'main.apps.MainConfig',
-    
     'api.apps.ApiConfig',
-
 ]
 
 
@@ -64,7 +55,7 @@ INSTALLED_APPS = [
 # =========================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ ADD THIS
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Correctly placed
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,10 +64,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-# =========================
-# ✅ URL CONFIG (MISSING FIX)
-# =========================
 ROOT_URLCONF = 'core.urls'
 
 
@@ -86,9 +73,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates',   # ✅ correct
-        ],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -140,7 +125,7 @@ USE_TZ = True
 
 
 # =========================
-# STATIC FILES
+# STATIC FILES (THE FIX)
 # =========================
 STATIC_URL = '/static/'
 
@@ -148,16 +133,13 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# STATIC_ROOT = BASE_DIR / "staticfiles"
-# Force files to the top level folder
+# ✅ This moves the folder UP one level so Railway can find it
 STATIC_ROOT = os.path.join(BASE_DIR, '..', 'staticfiles')
 
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-# ✅ ADD this line instead (Safe Mode):
+# ✅ Safe Mode storage (Prevents build crashes)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 
