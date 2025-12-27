@@ -90,21 +90,4 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-# --- TEMPORARY ADMIN CREATOR ---
-from django.http import HttpResponse
-from django.contrib.auth import get_user_model
-from django.urls import path
 
-def create_superuser_view(request):
-    User = get_user_model()
-    # Check if admin already exists to prevent errors
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
-        return HttpResponse("<h1>✅ Success!</h1><p>User: <b>admin</b><br>Password: <b>admin123</b></p>")
-    else:
-        return HttpResponse("<h1>⚠️ Admin already exists!</h1><p>You can login now.</p>")
-
-urlpatterns += [
-    path('make-admin/', create_superuser_view),
-]
-# -------------------------------
