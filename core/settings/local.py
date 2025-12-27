@@ -3,6 +3,8 @@ from .base import *
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    # ✅ Allow ALL hosts so Railway never blocks your site again
+    '*'
     "web-production-5294.up.railway.app",  # <--- Add this!
     '.railway.app',
     ".vercel.app",                         # <--- Add this for frontend!
@@ -10,7 +12,10 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-# Security: Trust requests from your Railway URL
-CSRF_TRUSTED_ORIGINS = [
-    "https://web-production-5294.up.railway.app",
-]
+# # Security: Trust requests from your Railway URL
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://web-production-5294.up.railway.app",
+# ]
+
+# (Add this if it's missing)
+CSRF_TRUSTED_ORIGINS = ['https://*.railway.app']

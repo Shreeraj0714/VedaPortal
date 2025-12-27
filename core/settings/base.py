@@ -12,7 +12,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================
 # SECURITY
 # =========================
+# SECRET_KEY = 'django-insecure-change-this-later'
+# DEBUG = True
+# ==============================================
+# 1. SECURITY SETTINGS (Rescue Mode)
+# ==============================================
 SECRET_KEY = 'django-insecure-change-this-later'
+
+# ✅ Turn DEBUG back ON to fix the 500 Error immediately
 DEBUG = True
 
 # 1. Get hosts from environment variables (Railway)
