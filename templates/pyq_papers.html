@@ -7,29 +7,42 @@
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
 <style>
-    body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+    /* 🎨 MODERN DARK THEME - SAME FAMILY */
+    body { 
+        background-color: #020617; 
+        font-family: 'Inter', sans-serif; 
+        color: #f1f5f9;
+    }
+    
     .page-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
 
     .header-section { margin-bottom: 40px; text-align: center; }
     .header-badge {
-        background: #f3e8ff; color: #7e22ce;
+        background: rgba(139, 92, 246, 0.1); 
+        color: #a78bfa;
         padding: 6px 16px; border-radius: 20px;
         font-size: 0.85rem; font-weight: 700;
         display: inline-block; margin-bottom: 10px;
+        border: 1px solid rgba(139, 92, 246, 0.3);
     }
-    .page-title { font-size: 2.5rem; font-weight: 800; color: #1e293b; }
-    .page-subtitle { color: #64748b; font-size: 1.1rem; }
+    .page-title { font-size: 2.5rem; font-weight: 800; color: #ffffff; }
+    .page-subtitle { color: #94a3b8; font-size: 1.1rem; }
 
     .pyq-card {
-        background: white; border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        margin-bottom: 30px; border: 1px solid #e2e8f0;
+        background: #0f172a; 
+        border-radius: 12px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        margin-bottom: 30px; 
+        border: 1px solid #1e293b;
         overflow: hidden;
     }
     .pyq-header {
-        background: linear-gradient(to right, #faf5ff, #fff);
-        padding: 20px 30px; border-bottom: 1px solid #e9d5ff;
-        display: flex; justify-content: space-between; align-items: center;
+        background: #0f172a;
+        padding: 20px 30px; 
+        border-bottom: 1px solid #1e293b;
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
     }
     .pyq-title-group { display: flex; align-items: center; }
     .pyq-icon {
@@ -39,26 +52,66 @@
         display: flex; align-items: center; justify-content: center;
         margin-right: 15px;
     }
-    .pyq-title { font-size: 1.2rem; font-weight: 700; }
+    .pyq-title { font-size: 1.2rem; font-weight: 700; color: #fff; }
     .year-badge {
         background: #334155; color: white;
         padding: 4px 10px; border-radius: 6px;
         font-size: 0.85rem; font-weight: 600;
     }
 
-    .content-box { padding: 30px; line-height: 1.8; }
+    /* 📏 STANDARDIZED READER & 10-LINE LIMIT for Question Box */
+    .content-box { 
+        padding: 30px; 
+        background: #020617; 
+        margin: 15px;
+        border-radius: 12px;
+        border: 1px solid #1e293b;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #cbd5e1;
+        max-height: 18.5em; 
+        overflow-y: auto;
+    }
 
-    details { border-top: 1px solid #e2e8f0; background: #f8fafc; }
+    details { border-top: 1px solid #1e293b; background: #0f172a; }
     summary {
         padding: 15px 30px; cursor: pointer;
-        font-weight: 600; color: #9333ea;
+        font-weight: 600; color: #a78bfa;
         list-style: none; display: flex; align-items: center;
     }
     summary::before { content: '🔒'; margin-right: 10px; }
     details[open] summary::before { content: '🔓'; }
-    .solution-body { padding: 30px; background: white; }
 
-    /* 🔒 SAME SECURITY CSS */
+    /* 📏 10-LINE LIMIT for Solution Box */
+    .solution-body { 
+        padding: 30px; 
+        background: #020617; 
+        margin: 0 15px 15px 15px;
+        border-radius: 12px;
+        border: 1px solid #1e293b;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #cbd5e1;
+        max-height: 18.5em; 
+        overflow-y: auto;
+    }
+
+    /* Paragraph Spacing */
+    .content-box p, .solution-body p { margin-bottom: 15px; }
+
+    /* Modern Dark Scrollbar */
+    .content-box::-webkit-scrollbar, .solution-body::-webkit-scrollbar { width: 6px; }
+    .content-box::-webkit-scrollbar-thumb, .solution-body::-webkit-scrollbar-thumb { 
+        background: #334155; border-radius: 10px; 
+    }
+
+    .back-btn {
+        display: inline-flex; align-items: center;
+        margin-bottom: 20px; color: #94a3b8;
+        text-decoration: none; font-weight: 500;
+    }
+
+    /* 🔒 SAME SECURITY CSS (UNTOUCHED) */
     #secure-container,
     #secure-container * {
         user-select: none;
@@ -75,7 +128,7 @@
 </style>
 
 <div class="page-container" id="secure-container">
-    <a href="javascript:history.back()">← Back</a>
+    <a href="javascript:history.back()" class="back-btn">← Back</a>
 
     <div class="header-section">
         <span class="header-badge">Previous Year Paper</span>
@@ -111,7 +164,7 @@
 
 <script>
 (function () {
-
+    /* 🛡️ ORIGINAL SECURITY CODE (UNTOUCHED) 🛡️ */
     const MAX_STRIKES = 10;
     let violations = parseInt(localStorage.getItem("veda_violations") || "0");
     const container = document.getElementById("secure-container");

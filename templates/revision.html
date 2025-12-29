@@ -7,8 +7,12 @@
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
 <style>
-    /* PAGE SETUP */
-    body { background-color: #fcfcfc; font-family: 'Inter', sans-serif; }
+    /* 🎨 MODERN DARK THEME - SAME FAMILY */
+    body { 
+        background-color: #020617; 
+        font-family: 'Inter', sans-serif; 
+        color: #f1f5f9;
+    }
     
     .page-container {
         max-width: 900px;
@@ -19,50 +23,69 @@
     /* HEADER */
     .header-section { margin-bottom: 40px; text-align: center; }
     .header-badge {
-        background: #fffbeb; color: #b45309;
+        background: rgba(245, 158, 11, 0.1); 
+        color: #fbbf24;
         padding: 6px 16px; border-radius: 20px;
         font-size: 0.85rem; font-weight: 800;
         display: inline-block; margin-bottom: 10px;
-        border: 2px solid #fcd34d;
+        border: 1px solid rgba(245, 158, 11, 0.3);
     }
-    .page-title { font-size: 2.5rem; font-weight: 800; color: #1e293b; }
-    .page-subtitle { color: #64748b; font-size: 1.1rem; }
+    .page-title { font-size: 2.5rem; font-weight: 800; color: #ffffff; }
+    .page-subtitle { color: #94a3b8; font-size: 1.1rem; }
 
     /* REVISION CARD */
     .rev-card {
-        background: white;
+        background: #0f172a;
         border-radius: 16px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
         margin-bottom: 30px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid #1e293b;
         overflow: hidden;
     }
 
     .rev-header {
         padding: 20px 30px;
-        border-bottom: 1px dashed #e2e8f0;
+        border-bottom: 1px dashed #334155;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #fafafa;
+        background: #0f172a;
     }
 
-    .rev-title { font-size: 1.2rem; font-weight: 700; }
+    .rev-title { font-size: 1.2rem; font-weight: 700; color: #3b82f6; }
 
+    /* 📏 STANDARDIZED READER & 10-LINE LIMIT */
     .rev-body {
         padding: 30px;
+        background: #020617; /* High contrast reader area */
+        margin: 0 15px 15px 15px;
+        border-radius: 12px;
+        border: 1px solid #1e293b;
+
+        /* typography config */
         font-size: 1.05rem;
-        line-height: 1.7;
-        color: #1e293b;
+        line-height: 1.8; /* Extra breathing room */
+        color: #cbd5e1;
+
+        /* 10-line visibility limit */
+        max-height: 18.5em; 
+        overflow-y: auto;
     }
+
+    /* Paragraph Spacing */
+    .rev-body p { margin-bottom: 15px; }
+
+    /* Modern Dark Scrollbar */
+    .rev-body::-webkit-scrollbar { width: 6px; }
+    .rev-body::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
     .back-btn {
         display: inline-flex; align-items: center;
-        margin-bottom: 20px; color: #64748b;
+        margin-bottom: 20px; color: #94a3b8;
         text-decoration: none; font-weight: 500;
     }
 
-    /* 🔒 SAME SECURITY CSS */
+    /* 🔒 SAME SECURITY CSS (UNTOUCHED) */
     #secure-container,
     #secure-container * {
         user-select: none;
@@ -105,7 +128,7 @@
 
 <script>
 (function () {
-
+    /* 🛡️ ORIGINAL SECURITY CODE (UNTOUCHED) 🛡️ */
     const MAX_STRIKES = 10;
     let violations = parseInt(localStorage.getItem("veda_violations") || "0");
     const container = document.getElementById("secure-container");
