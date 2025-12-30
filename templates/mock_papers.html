@@ -4,14 +4,18 @@
 {% block title %}Mock Papers | {{ subject.name }}{% endblock %}
 
 {% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
 <style>
-    /* 🎨 MODERN DARK THEME - SAME FAMILY */
+    /* 🎨 MODERN DARK THEME - UPDATED TYPOGRAPHY */
     body { 
         background-color: #020617; 
-        font-family: 'Inter', sans-serif; 
+        font-family: 'Outfit', sans-serif; /* Clean, modern geometric font */
         color: #f1f5f9;
+        -webkit-font-smoothing: antialiased;
     }
     
     .page-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
@@ -24,9 +28,10 @@
         font-size: 0.85rem; font-weight: 700;
         display: inline-block; margin-bottom: 10px;
         border: 1px solid rgba(245, 158, 11, 0.3);
+        letter-spacing: 0.5px;
     }
-    .page-title { font-size: 2.5rem; font-weight: 800; color: #ffffff; }
-    .page-subtitle { color: #94a3b8; font-size: 1.1rem; }
+    .page-title { font-size: 2.8rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; }
+    .page-subtitle { color: #94a3b8; font-size: 1.1rem; font-weight: 300; }
 
     .paper-card {
         background: #0f172a; 
@@ -50,23 +55,24 @@
         display: flex; align-items: center; justify-content: center;
         margin-right: 15px;
     }
-    .paper-title { font-size: 1.25rem; font-weight: 700; color: #fff; }
+    .paper-title { font-size: 1.35rem; font-weight: 600; color: #fff; }
 
     /* 📏 STANDARDIZED READER & 10-LINE LIMIT */
     .content-box { 
         padding: 30px; 
-        background: #020617; /* High contrast reader area */
+        background: #020617; 
         margin: 15px;
         border-radius: 12px;
         border: 1px solid #1e293b;
         
-        /* typography config */
-        font-size: 1.05rem;
-        line-height: 1.8; /* Extra breathing room */
+        /* typography config - Outfit for clarity or Fira Code for technical look */
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.26rem; /* Maintained 20% increase */
+        line-height: 1.8; 
         color: #cbd5e1;
 
         /* 10-line visibility limit */
-        max-height: 18.5em; 
+        max-height: 22.2em; 
         overflow-y: auto;
     }
     
@@ -80,7 +86,9 @@
         display: inline-flex; align-items: center;
         margin-bottom: 20px; color: #94a3b8;
         text-decoration: none; font-weight: 500;
+        transition: color 0.2s;
     }
+    .back-btn:hover { color: #fff; }
 
     /* 🔒 SAME SECURITY CSS (UNTOUCHED) */
     #secure-container,
@@ -99,7 +107,9 @@
 </style>
 
 <div class="page-container" id="secure-container">
-    <a href="javascript:history.back()" class="back-btn">← Back</a>
+    <a href="javascript:history.back()" class="back-btn">
+        <i class="ri-arrow-left-line" style="margin-right: 5px;"></i> Back
+    </a>
 
     <div class="header-section">
         <span class="header-badge">Mock Series</span>
@@ -171,7 +181,6 @@ Contact admin if needed.`
     }
 
     function handleStrike() {
-
         logViolationToServer();
         violations++;
 
